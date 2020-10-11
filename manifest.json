@@ -1,0 +1,47 @@
+{
+  "manifest_version": 2,
+  "version": "1.0.0",
+  "description" : "PDD操作工具",
+  "name": "PDD操作工具",
+  "browser_action": {
+    "default_icon": "images/favicon.png",
+    "default_title": "PDD操作工具",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "css":[
+        "css/contentScript.css"
+      ],
+      "img": [
+        "images/loading.gif"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/contentScript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "background": {
+    "scripts": [
+      "js/background.js",
+      "js/jquery.min.js"
+    ]
+  },
+  "icons": {
+    "16": "images/favicon.png",
+    "128": "images/favicon.png"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "http://*/*",
+    "https://*/*"
+  ]
+}
