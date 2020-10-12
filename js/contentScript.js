@@ -5,6 +5,7 @@ var dto = {code: "", msg: "", url: "", element: "", option: "", content: "", typ
 var response_dto = {code: response_success, source: requst_source};
 var timer = null;
 var timer_stop = null;
+var timer_container_count = null;// 图片验证码出现计时40s
 var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px;z-index: 1040;width: 100vw;height: 100vh;background-color: rgb(0, 0, 0);"></div>' +
     '<div style="position: fixed;z-index: 1041;background-color: white;padding: 16px;border-radius: 5px;font-size: 1rem;left: 50%;top: 40%;transform: translateX(-50%);font-weight: 300;">' +
     '<div style="margin-bottom: 10px">' +
@@ -67,6 +68,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     timer_stop = null;
                     timer = null;
                 }
+                if($("MDL_container_4-62-1").length > 0 || $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length > 0){
+                    timer_container_count++;
+                    if(timer_container_count > 400){
+                        timer_container_count = 0;
+                        $('#cover').hide(800);
+                        clearInterval(timer);
+                        clearInterval(timer_stop);
+                        timer_stop = null;
+                        timer = null;
+                    }
+                }
             }), 100);
             let i = 0;
             var new_table = $("<table></table>");
@@ -93,10 +105,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     } while (true)
                 }
                 var scroll = $(document.querySelector(".TB_outerWrapper_4-62-1.TB_bordered_4-62-1.TB_notTreeStriped_4-62-1").children[0].children[0].children[1].children[0]);
-                if (i > 8) {
+                if (i > 5) {
                     scroll.animate({scrollTop: 60 * (i + 1) - 60}, 1000);
                 }
-                var arr_index = [2, 11, 10, 3, 4, 5, 6];
+                var arr_index = [2, 3, 4, 5, 6, 11, 10];
                 if (i >= tr_arr.length) {
                     let j = 0
                     var check = true;
@@ -108,7 +120,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         className = $(td).find("i").attr("class");
                         if (className.indexOf("unlock") == -1) {
                             check = false;
-                            i = 0;
+                            i = -1;
                             break;
                         }
                         j++;
@@ -129,8 +141,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                             }
                             new_table.append(new_tr);
                         }
-                        if(false){ // 判断下一页
-
+                        var next_PGT = $(".PGT_next_4-62-1");
+                        if(next_PGT.length != 0 && next_PGT.attr("class").indexOf("disabled") == -1){ // 判断下一页
+                            next_PGT.click();
+                            i = -1;
                         }else{
                             clearInterval(timer);
                             $(document.getElementById("cover").children[1]).css("top", "20%");
@@ -139,7 +153,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     }
                 }
                 i++;
-            }), 1000);
+            }), 10000);
         }
     } else if (request.cmd == "stop_opera") {
         if (request.request.code == response_success) {
