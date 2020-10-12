@@ -19,7 +19,7 @@ var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px
 var script = '<script type="text/javascript">\n' +
     'function copy_cover () {\n' +
     '   debugger;var tr_arr = document.getElementById("new_table").children;\n' +
-    '   var content = "";\n' +
+    '   var content = "\\n";\n' +
     '   for (let i = 0; i < tr_arr.length; i++) {\n' +
     '       var td = tr_arr[i];\n' +
     '       for (let j = 0; j < td.children.length; j++) {\n' +
@@ -60,15 +60,18 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     } else if (request.cmd == "copy_order_address") {
         if (request.request.code == response_success) {
             $('#cover').show(800);
-            timer_stop = setInterval((function () {
-                if($('#cover').css("display") == 'none'){
+            timer_stop = setInterval((function () { // 检测是否关闭
+                if ($('#cover').css("display") == 'none') {
                     clearInterval(timer);
                     clearInterval(timer_stop);
                     timer_stop = null;
                     timer = null;
                 }
-            }),100);
+            }), 100);
             let i = 0;
+            var new_table = $("<table></table>");
+            new_table.attr("id", "new_table");
+            new_table.css("border-collapse", "collapse");
             timer = setInterval((function () {
                 var tr_arr = $($("table")[1]).find("tr");
                 var td = $(tr_arr[i]).find("td:nth-child(3)");
@@ -91,55 +94,52 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 }
                 var scroll = $(document.querySelector(".TB_outerWrapper_4-62-1.TB_bordered_4-62-1.TB_notTreeStriped_4-62-1").children[0].children[0].children[1].children[0]);
                 if (i > 8) {
-                    scroll.animate({scrollTop: 60 * (i + 1)-60}, 1000);
+                    scroll.animate({scrollTop: 60 * (i + 1) - 60}, 1000);
                 }
                 var arr_index = [2, 11, 10, 3, 4, 5, 6];
                 if (i >= tr_arr.length) {
-
-                    //$('#cover').hide(800);
-                    clearInterval(timer);
-                    var new_table = $("<table></table>");
-                    new_table.attr("id", "new_table");
-                    new_table.css("border-collapse", "collapse");
-                    for (let j = 0; j < tr_arr.length; j++) {
-                        var new_tr = $("<tr></tr>");
-                        var tr = tr_arr[j];
-                        for (let k = 0; k < arr_index.length; k++) {
-                            var new_td = $("<td></td>");
-                            new_td.css("border", "1px solid #d4d5d5");
-                            new_td.css("padding", "10px");
-                            var text_td = $(tr).find(":nth-child(" + arr_index[k] + ")").text().replace(".beast-core-ellipsis-2{-webkit-line-clamp:2;-webkit-box-orient: vertical;}", "");
-                            text_td = text_td.replace("回收单号", "");
-                            text_td = text_td.replace("锁定", "");
-                            new_td.text(text_td);
-                            if (text_td.split("/").length == 3) {
-                                var add = text_td.split("/");
-                                var new_td_0 = $("<td></td>");
-                                new_td_0.css("border", "1px solid #d4d5d5");
-                                new_td_0.css("padding", "10px");
-                                new_td_0.text(add[0]);
-                                var new_td_1 = $("<td></td>");
-                                new_td_1.css("border", "1px solid #d4d5d5");
-                                new_td_1.css("padding", "10px");
-                                new_td_1.text(add[1]);
-                                var new_td_2 = $("<td></td>");
-                                new_td_2.css("border", "1px solid #d4d5d5");
-                                new_td_2.css("padding", "10px");
-                                new_td_2.text(add[2]);
-                                new_tr.append(new_td_0);
-                                new_tr.append(new_td_1);
-                                new_tr.append(new_td_2);
-                            } else {
+                    let j = 0
+                    var check = true;
+                    do { // 检测是否还有未点击
+                        if (j >= tr_arr.length) {
+                            break;
+                        }
+                        td = $(tr_arr[j]).find("td:nth-child(3)");
+                        className = $(td).find("i").attr("class");
+                        if (className.indexOf("unlock") == -1) {
+                            check = false;
+                            i = 0;
+                            break;
+                        }
+                        j++;
+                    } while (true)
+                    if (check) {
+                        for (let j = 0; j < tr_arr.length; j++) {
+                            var new_tr = $("<tr></tr>");
+                            var tr = tr_arr[j];
+                            for (let k = 0; k < arr_index.length; k++) {
+                                var new_td = $("<td></td>");
+                                new_td.css("border", "1px solid #d4d5d5");
+                                new_td.css("padding", "10px");
+                                var text_td = $(tr).find(":nth-child(" + arr_index[k] + ")").text().replace(".beast-core-ellipsis-2{-webkit-line-clamp:2;-webkit-box-orient: vertical;}", "");
+                                text_td = text_td.replace("回收单号", "");
+                                text_td = text_td.replace("锁定", "");
+                                new_td.text(text_td);
                                 new_tr.append(new_td);
                             }
+                            new_table.append(new_tr);
                         }
-                        new_table.append(new_tr);
+                        if(false){ // 判断下一页
+
+                        }else{
+                            clearInterval(timer);
+                            $(document.getElementById("cover").children[1]).css("top", "20%");
+                            $(document.getElementById("cover").children[1].children[1]).html(new_table);
+                        }
                     }
-                    $(document.getElementById("cover").children[1]).css("top", "20%");
-                    $(document.getElementById("cover").children[1].children[1]).html(new_table);
                 }
                 i++;
-            }), 10000);
+            }), 1000);
         }
     } else if (request.cmd == "stop_opera") {
         if (request.request.code == response_success) {
@@ -153,20 +153,3 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
-// 发送消息到background
-function sendPostBackMessage(sign, element, option) {
-    dto.element = sign;
-    dto.code = response_success;
-    dto.url = window.location.href;
-    dto.option = option;
-    if (option == "click") {
-        dto.content = "";
-    } else if (option == "get_text") {
-        dto.content = getAllText(element)
-    } else if (option == "get_pic") {
-        dto.content = getAllText(element)
-    }
-    dto.type = element.localName
-    //console.info(dto);
-    chrome.runtime.sendMessage({cmd: "send_element_background", "dataDto": dto});
-}
