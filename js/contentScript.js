@@ -158,8 +158,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     } else if (request.cmd == "stop_opera") {
         if (request.request.code == response_success) {
             $('#cover').hide(800);
-            clearInterval(timer);
-            timer = null;
+            //clearInterval(timer);
+            //timer = null;
         }
     } else if (request.cmd == "service_execute_program_settings") {
         //console.info("点击" + request.request.element);

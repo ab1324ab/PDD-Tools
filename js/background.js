@@ -4,6 +4,7 @@ var response_fail = "fail";
 var requst_source = "background";
 var response_dto = {code: response_success ,source: requst_source}
 var socket;
+
 function getStorageKey (){
     var dto = {code:"" ,msg:"" ,url:"" ,element:"" ,value:"" ,source: requst_source};
 	var connKey = sessionStorage.getItem('connKey')
