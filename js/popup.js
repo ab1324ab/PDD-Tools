@@ -30,7 +30,8 @@ $(function () {
             } else if ($(this).val() == "stop_opera") {
                 dto.code = response_success;
                 dto.url = ""
-                sendToContent($(this).val(), dto);
+                bgFunction.baiduOcrOrderImage("ddddddddddddddddddddd");
+                //sendToContent($(this).val(), dto);
             }
             window.close();
         }
@@ -39,6 +40,10 @@ $(function () {
     $("a.list-group-item").on("click", function (event) {
         var value = $(this).attr("value");
         if (value == "copy_order_address") {
+            dto.code = response_success;
+            dto.url = "https://www.so.com"
+            sendToContent(value, dto);
+        } else if(value == "naval_informa_identifica"){
             dto.code = response_success;
             dto.url = "https://www.so.com"
             sendToContent(value, dto);
