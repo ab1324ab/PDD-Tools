@@ -3,7 +3,7 @@ var response_fail = "fail";
 var requst_source = "popup";
 var dto = {code: "", msg: "", url: "", source: requst_source};
 var response_dto = {code: response_success, source: requst_source}
-var bgFunction = null;
+var bgFunction = chrome.extension.getBackgroundPage();
 var object = {
     "prompt": "鼠标停留对应按钮显示提示信息",
     "open_back": "打开对应后台",
@@ -30,8 +30,7 @@ $(function () {
             } else if ($(this).val() == "stop_opera") {
                 dto.code = response_success;
                 dto.url = ""
-                bgFunction.baiduOcrOrderImage("ddddddddddddddddddddd");
-                //sendToContent($(this).val(), dto);
+                sendToContent($(this).val(), dto);
             }
             window.close();
         }
@@ -43,18 +42,39 @@ $(function () {
             dto.code = response_success;
             dto.url = "https://www.so.com"
             sendToContent(value, dto);
+            window.close();
         } else if(value == "naval_informa_identifica"){
-            dto.code = response_success;
-            dto.url = "https://www.so.com"
-            sendToContent(value, dto);
+            $("#informa_identifica").click();
+            $("#informa_identifica").change(function () {
+                console.info("改变")
+                //bgFunction.baiduOcrOrderImage("ddddddddddddddddddddd");
+                if(this.files[0] == undefined){
+                    return;
+                }
+                var file = this.files[0];
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function(){
+                    console.log(this.result);
+                    //$("#name").html(file.name);
+                    var base64Str = this.result;
+                    //$("#tempImg").attr("src",base64Str);
+                    var startNum = base64Str.indexOf("base64,");
+                    startNum = startNum*1 + 7;
+                    var baseStr = base64Str.slice(startNum);
+                    bgFunction.baiduOcrOrderImage(baseStr);
+                    //$("#tempName").val(baseStr);
+                }
+            })
+            // dto.code = response_success;
+            // dto.url = "https://www.so.com"
+            // sendToContent(value, dto);
+            // bgFunction.baiduOcrOrderImage("ddddddddddddddddddddd");
         }
-        window.close();
+        //
     });
 
     function sendToContent(cmd, dto) {
-        if (bgFunction == null) {
-            bgFunction = chrome.extension.getBackgroundPage();
-        }
         bgFunction.sendMessageToContentScript({cmd: cmd, request: dto}, function (response) {
             console.info(response)
         });

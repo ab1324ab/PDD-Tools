@@ -80,10 +80,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         }
                     } else {
                         $("#cover_close").attr("value", "close");
-                        //$('#cover').css("display","none");
                     }
-                }
-                if (cover_close_value == "close") {
+                }else if (cover_close_value == "close") {
                     clearInterval(timer);
                     clearInterval(timer_stop);
                     timer_stop = null;
@@ -93,15 +91,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     new_table = $("<table></table>");
                     $("#cover_close").attr("value", "");
                     $('#cover').css("display", "none");
-                }
-                if ($("MDL_container_4-62-1").length > 0 || $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length > 0) {
+                }else if ($(".MDL_container_4-62-1").length > 0 || $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length > 0) {
                     timer_container_count++;
-                    if (timer_container_count > 300 && timer_container_count < 350) {
+                    if (timer_container_count > 100 && timer_container_count < 150) {
                         clearInterval(timer);
                         timer = null;
                     }
-                }
-                if ($("MDL_container_4-62-1").length == 0 && $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length == 0 && timer_container_count >= 300) {
+                }else if ($(".MDL_container_4-62-1").length == 0 && $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length == 0 && timer_container_count >= 100) {
                     copyOrderAddress();
                     timer_container_count = 0;
                 }
@@ -109,7 +105,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             copyOrderAddress();
         }
     } else if (request.cmd == "naval_informa_identifica") {
+        if (request.request.code == response_success) {
 
+        }
     } else if (request.cmd == "stop_opera") {
         if (request.request.code == response_success) {
             var cover_close_value = document.getElementById("cover_close").value;
