@@ -77,7 +77,18 @@ function getStorageKey() {
 
 // 接受来自前端的信息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    var dto = {cmd: "",code: "", msg: "", option: "", content: "", type: "", url: "", element: "", value: "", source: requst_source};
+    var dto = {
+        cmd: "",
+        code: "",
+        msg: "",
+        option: "",
+        content: "",
+        type: "",
+        url: "",
+        element: "",
+        value: "",
+        source: requst_source
+    };
     if (request.cmd == 'send_element_background') {
         // 发送数据到工具
         dto.cmd = "service_bind_element";
@@ -94,28 +105,44 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 // 发送消息到前端 获取topId方法
 function sendMessageToContentScript(message, callback) {
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        console.info(tabs);
-        chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
-            if (callback) callback(response);
+    try {
+        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+            console.info(tabs);
+            chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
+                if (callback) callback(response);
+            });
         });
-    });
+    }catch (e) {
+        console.info(e);
+    }
 }
 
 //识别水军信息
-function baiduOcrOrderImage(imgBase64) {
+function baiduOcrOrderImage(name, imgBase64) {
     let url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=24.7193727281fa2c5646ffbca147548dda.2592000.1605171490.282335-18040110";
+    var order_no = null;
     $.ajax({
         url: url,
         type: "post",
         contentType: "application/x-www-form-urlencoded",
-        async:false,
-        data: {image:imgBase64},
+        async: false,
+        data: {image: imgBase64},
         success: function (response) {
+            console.info(name);
             console.info(response);
+            if (response.error_code != null) {
+                order_no = null;
+            }
+            for (var i = 0; i < response.words_result.length; i++) {
+                if (response.words_result[i].words.indexOf("订单编号") != -1) {
+                    order_no =  response.words_result[i].words.split(":")[1];
+                }
+            }
         },
         error: function (error) {
-            console.info(error);
+            console.info(error)
+            order_no = null;
         }
     });
+    return order_no;
 }

@@ -10,7 +10,7 @@ var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px
     '<div style="position: fixed;z-index: 1041;background-color: white;padding: 16px;border-radius: 5px;font-size: 1rem;left: 50%;top: 40%;transform: translateX(-50%);font-weight: 300;">' +
     '<div style="margin-bottom: 10px">' +
     '<button type="button" class="btn btn-outline-primary" style="width: 200px;display: block;margin: 0 auto;" onclick="copy_cover()" >复制</button>' +
-    '<button id="cover_close" value="" style="position: absolute;right: 16px;top: 16px;" type="button" class="btn btn-outline-primary" onclick="document.getElementById(\'cover_close\').value = \'close\';">X</button>' +
+    '<button id="cover_close" value="" style="position: absolute;right: 16px;top: 16px;" type="button" class="btn btn-outline-primary" onclick="isClose()">X</button>' +
     '</div>' +
     '<div style="text-align: center;height: auto;max-height: 400px;overflow-y: auto;">' +
     '<div style="display: inline-block;vertical-align: middle;"><img style="display: inline-block;vertical-align: middle;" width="50" src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1602329894089&amp;di=d74ebf0e63b11375bc6b5c687ac394de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.ui.cn%2Fdata%2Ffile%2F4%2F9%2F2%2F2108294.gif">处理中...</div>' +
@@ -56,17 +56,17 @@ var script = '<script type="text/javascript">\n' +
     '   }\n' +
     '}\n' +
     '</script>';
-$("body").append('<div id="cover" style="display: none">' + cover_content + '</div>');
+$("body").append('<div id="cover" style="display: block">' + cover_content + '</div>');
 $("body").append(script);
 // 接受来自后端的信息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    $(document.getElementById("cover")).html(cover_content);
     if (request.cmd == "open_back") {
         if (request.request.code == response_success) {
             window.open(request.request.url);
             sendResponse(response_dto);
         }
     } else if (request.cmd == "copy_order_address") {
+        $(document.getElementById("cover")).html(cover_content);
         if (request.request.code == response_success) {
             $('#cover').show(800);
             timer_stop = setInterval((function () { // 检测是否关闭
@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     } else {
                         $("#cover_close").attr("value", "close");
                     }
-                }else if (cover_close_value == "close") {
+                } else if (cover_close_value == "close") {
                     clearInterval(timer);
                     clearInterval(timer_stop);
                     timer_stop = null;
@@ -91,13 +91,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     new_table = $("<table></table>");
                     $("#cover_close").attr("value", "");
                     $('#cover').css("display", "none");
-                }else if ($(".MDL_container_4-62-1").length > 0 || $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length > 0) {
+                } else if ($(".MDL_container_4-62-1").length > 0 || $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length > 0) {
                     timer_container_count++;
                     if (timer_container_count > 100 && timer_container_count < 150) {
                         clearInterval(timer);
                         timer = null;
                     }
-                }else if ($(".MDL_container_4-62-1").length == 0 && $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length == 0 && timer_container_count >= 100) {
+                } else if ($(".MDL_container_4-62-1").length == 0 && $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length == 0 && timer_container_count >= 100) {
                     copyOrderAddress();
                     timer_container_count = 0;
                 }
@@ -106,7 +106,24 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         }
     } else if (request.cmd == "naval_informa_identifica") {
         if (request.request.code == response_success) {
-
+            var brushOrderArr = request.request.brushOrderArr;
+            var errorOrderArr = request.request.errorOrderArr;
+            if ($("#new_table").length = 1) {
+                var new_tr = $("#new_table").find("tr");
+                for (let j = 0; j < new_tr.length; j++) {
+                    var order_no = $(new_tr[j]).find("td:nth-child(1)").text();
+                    var new_td = $("<td></td>");
+                    new_td.css("border", "1px solid #d4d5d5");
+                    new_td.css("padding", "10px");
+                    for (let k = 0; k < brushOrderArr.length; k++) {
+                        if(order_no == brushOrderArr[k]){
+                            new_td.text("水军");
+                            break;
+                        }
+                    }
+                    $(new_tr[j]).find("td:nth-child(1)").after(new_td);
+                }
+            }
         }
     } else if (request.cmd == "stop_opera") {
         if (request.request.code == response_success) {
@@ -178,6 +195,9 @@ function copyOrderAddress() {
                         var new_td = $("<td></td>");
                         new_td.css("border", "1px solid #d4d5d5");
                         new_td.css("padding", "10px");
+                        if (k == 0) {
+                            new_td.css("width", "200px");
+                        }
                         var text_td = $(tr).find(":nth-child(" + arr_index[k] + ")").text().replace(".beast-core-ellipsis-2{-webkit-line-clamp:2;-webkit-box-orient: vertical;}", "");
                         text_td = text_td.replace("回收单号", "");
                         text_td = text_td.replace("锁定", "");
@@ -193,6 +213,7 @@ function copyOrderAddress() {
                 } else {
                     clearInterval(timer);
                     $(document.getElementById("cover").children[1]).css("top", "20%");
+                    $(document.getElementById("cover").children[1]).css("width", "1200px");
                     $(document.getElementById("cover").children[1].children[1]).html(new_table);
                 }
             }

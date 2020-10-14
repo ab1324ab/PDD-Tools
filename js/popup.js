@@ -8,7 +8,7 @@ var object = {
     "prompt": "鼠标停留对应按钮显示提示信息",
     "open_back": "打开对应后台",
     "copy_info": "复制订单信息，循环延时点击开始，弹出窗口复制xlsx",
-    "stop_opera":"停止当前的执行操作"
+    "stop_opera": "停止当前的执行操作"
 }
 $(function () {
 
@@ -43,33 +43,40 @@ $(function () {
             dto.url = "https://www.so.com"
             sendToContent(value, dto);
             window.close();
-        } else if(value == "naval_informa_identifica"){
+        } else if (value == "naval_informa_identifica") {
             $("#informa_identifica").click();
             $("#informa_identifica").change(function () {
-                console.info("改变")
-                //bgFunction.baiduOcrOrderImage("ddddddddddddddddddddd");
-                if(this.files[0] == undefined){
-                    return;
+                var _this = this;
+                var brushOrderNo = new Array();
+                var errorOrderImg = new Array();
+                for (let i = 0; i < this.files.length; i++) {
+                    var file = this.files[i];
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    var name = this.files[i].name;
+                    reader.onload = (function (fileReader,name) {
+                        console.log(this.result);
+                        //$("#name").html(file.name);
+                        var base64Str = this.result;
+                        //$("#tempImg").attr("src",base64Str);
+                        var startNum = base64Str.indexOf("base64,");
+                        startNum = startNum * 1 + 7;
+                        var baseStr = base64Str.slice(startNum);
+                        var orderNo = bgFunction.baiduOcrOrderImage(_this.files[i].name, baseStr);
+                        if(orderNo != undefined){
+                            brushOrderNo.push(orderNo);
+                        }else{
+                            errorOrderImg.push(_this.files[i].name);
+                        }
+                    })
                 }
-                var file = this.files[0];
-                var reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function(){
-                    console.log(this.result);
-                    //$("#name").html(file.name);
-                    var base64Str = this.result;
-                    //$("#tempImg").attr("src",base64Str);
-                    var startNum = base64Str.indexOf("base64,");
-                    startNum = startNum*1 + 7;
-                    var baseStr = base64Str.slice(startNum);
-                    bgFunction.baiduOcrOrderImage(baseStr);
-                    //$("#tempName").val(baseStr);
-                }
-            })
-            // dto.code = response_success;
-            // dto.url = "https://www.so.com"
-            // sendToContent(value, dto);
-            // bgFunction.baiduOcrOrderImage("ddddddddddddddddddddd");
+                console.info("改变");
+                dto.code = response_success;
+                dto.brushOrderArr = brushOrderNo;
+                dto.errorOrderArr = errorOrderImg;
+                sendToContent(value, dto);
+            });
+            //this.files = [];
         }
         //
     });
