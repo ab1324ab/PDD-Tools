@@ -56,7 +56,7 @@ var script = '<script type="text/javascript">\n' +
     '   }\n' +
     '}\n' +
     '</script>';
-$("body").append('<div id="cover" style="display: block">' + cover_content + '</div>');
+$("body").append('<div id="cover" style="display: none">' + cover_content + '</div>');
 $("body").append(script);
 // 接受来自后端的信息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -103,12 +103,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 }
             }), 100);
             copyOrderAddress();
+            sendResponse(response_dto);
         }
     } else if (request.cmd == "naval_informa_identifica") {
         if (request.request.code == response_success) {
             var brushOrderArr = request.request.brushOrderArr;
             var errorOrderArr = request.request.errorOrderArr;
-            if ($("#new_table").length = 1) {
+            console.info(brushOrderArr);
+            console.info(errorOrderArr);
+            var isExistArr = new Array();
+            if ($("#new_table").length == 1) {
                 var new_tr = $("#new_table").find("tr");
                 for (let j = 0; j < new_tr.length; j++) {
                     var order_no = $(new_tr[j]).find("td:nth-child(1)").text();
@@ -116,15 +120,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     new_td.css("border", "1px solid #d4d5d5");
                     new_td.css("padding", "10px");
                     for (let k = 0; k < brushOrderArr.length; k++) {
-                        if(order_no == brushOrderArr[k]){
+                        if (order_no == brushOrderArr[k].split("|")[0]) {
                             new_td.text("水军");
+                            isExistArr.push(brushOrderArr[k]);
                             break;
                         }
                     }
                     $(new_tr[j]).find("td:nth-child(1)").after(new_td);
                 }
+                var differArr = brushOrderArr.concat(isExistArr).filter(function (v, i, arr) {
+                    return arr.indexOf(v) === arr.lastIndexOf(v);
+                });
             }
         }
+        sendResponse(response_dto);
     } else if (request.cmd == "stop_opera") {
         if (request.request.code == response_success) {
             var cover_close_value = document.getElementById("cover_close").value;
@@ -134,9 +143,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 document.getElementById("cover_close").value = "close"
             }
         }
+        sendResponse(response_dto);
     } else if (request.cmd == "service_execute_program_settings") {
         //console.info("点击" + request.request.element);
         $(request.request.element)[0].click();
+        sendResponse(response_dto);
     }
 });
 

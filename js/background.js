@@ -2,6 +2,7 @@ var response_success = "success";
 var response_fail = "fail";
 var requst_source = "background";
 var response_dto = {code: response_success, source: requst_source}
+var dto = {cmd: "", code: "", msg: "", option: "", content: "", type: "", url: "", element: "", value: "", source: requst_source};
 var socket;
 
 function getStorageKey() {
@@ -77,18 +78,6 @@ function getStorageKey() {
 
 // 接受来自前端的信息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    var dto = {
-        cmd: "",
-        code: "",
-        msg: "",
-        option: "",
-        content: "",
-        type: "",
-        url: "",
-        element: "",
-        value: "",
-        source: requst_source
-    };
     if (request.cmd == 'send_element_background') {
         // 发送数据到工具
         dto.cmd = "service_bind_element";
@@ -105,16 +94,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 // 发送消息到前端 获取topId方法
 function sendMessageToContentScript(message, callback) {
-    try {
-        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-            console.info(tabs);
-            chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
-                if (callback) callback(response);
-            });
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        if (message.pageTabs == undefined) {
+            message.pageTabs = tabs;
+        }
+        chrome.tabs.sendMessage(message.pageTabs[0].id, message, function (response) {
+            if (callback) callback(response);
         });
-    }catch (e) {
-        console.info(e);
-    }
+    });
 }
 
 //识别水军信息
@@ -135,7 +122,7 @@ function baiduOcrOrderImage(name, imgBase64) {
             }
             for (var i = 0; i < response.words_result.length; i++) {
                 if (response.words_result[i].words.indexOf("订单编号") != -1) {
-                    order_no =  response.words_result[i].words.split(":")[1];
+                    order_no = response.words_result[i].words.split(":")[1];
                 }
             }
         },
@@ -145,4 +132,69 @@ function baiduOcrOrderImage(name, imgBase64) {
         }
     });
     return order_no;
+}
+// 处理图片信息
+function pictureOrderInfoProcess(files) {
+    var brushOrderNo = new Array();
+    var errorOrderImg = new Array();
+    for (let i = 0; i < files.length; i++) {
+        var file = files[i];
+        readFileBase64(file).then(function (result) {//处理 result
+            var base64Str = result;
+            var startNum = base64Str.indexOf("base64,");
+            startNum = startNum * 1 + 7;
+            var baseStr = base64Str.slice(startNum);
+            //var orderNo = baiduOcrOrderImage(files[i].name, baseStr);
+            let url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=24.7193727281fa2c5646ffbca147548dda.2592000.1605171490.282335-18040110";
+            var order_no = null;
+            $.ajax({
+                url: url,
+                type: "post",
+                contentType: "application/x-www-form-urlencoded",
+                async: false,
+                data: {image: baseStr},
+                success: function (response) {
+                    console.info(response);
+                    if (response.error_code != null) {
+                        order_no = null;
+                    }
+                    for (var i = 0; i < response.words_result.length; i++) {
+                        if (response.words_result[i].words.indexOf("订单编号") != -1) {
+                            order_no = response.words_result[i].words.split(":")[1];
+                        }
+                    }
+                },
+                error: function (error) {
+                    console.info(error)
+                    order_no = null;
+                }
+            });
+            console.info(files[i].name + " 识别: " + order_no)
+            if (order_no != undefined) {
+                brushOrderNo.push(order_no + "|" + files[i].name);
+            } else {
+                errorOrderImg.push(files[i].name);
+            }
+        }).then(function () {
+            if (i == files.length - 1) {
+                dto.code = response_success;
+                dto.brushOrderArr = brushOrderNo;
+                dto.errorOrderArr = errorOrderImg;
+                sendMessageToContentScript({cmd: "naval_informa_identifica",pageTabs: undefined,request: dto}, function (response) {
+                    console.info(response);
+                })
+            }
+        })
+    }
+}
+
+// 读取base64信息
+function readFileBase64(img) {
+    return new Promise(function (resolve, reject) {
+        let reader = new FileReader()
+        reader.readAsDataURL(img)
+        reader.onload = function () {
+            resolve(this.result)
+        }
+    })
 }
