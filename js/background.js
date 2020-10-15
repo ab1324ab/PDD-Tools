@@ -2,7 +2,18 @@ var response_success = "success";
 var response_fail = "fail";
 var requst_source = "background";
 var response_dto = {code: response_success, source: requst_source}
-var dto = {cmd: "", code: "", msg: "", option: "", content: "", type: "", url: "", element: "", value: "", source: requst_source};
+var dto = {
+    cmd: "",
+    code: "",
+    msg: "",
+    option: "",
+    content: "",
+    type: "",
+    url: "",
+    element: "",
+    value: "",
+    source: requst_source
+};
 var socket;
 
 function getStorageKey() {
@@ -133,13 +144,14 @@ function baiduOcrOrderImage(name, imgBase64) {
     });
     return order_no;
 }
+
 // 处理图片信息
 function pictureOrderInfoProcess(files) {
     var brushOrderNo = new Array();
     var errorOrderImg = new Array();
     for (let i = 0; i < files.length; i++) {
         var file = files[i];
-        readFileBase64(file).then(function (result) {//处理 result
+        readFileBase64(file, i, files).then(function (result) {//处理 result
             var base64Str = result;
             var startNum = base64Str.indexOf("base64,");
             startNum = startNum * 1 + 7;
@@ -155,8 +167,8 @@ function pictureOrderInfoProcess(files) {
                 data: {image: baseStr},
                 success: function (response) {
                     console.info(response);
-                    if (response.error_code != null) {
-                        order_no = null;
+                    if (response.error_code != undefined) {
+                        order_no = undefined;
                     }
                     for (var i = 0; i < response.words_result.length; i++) {
                         if (response.words_result[i].words.indexOf("订单编号") != -1) {
@@ -166,7 +178,7 @@ function pictureOrderInfoProcess(files) {
                 },
                 error: function (error) {
                     console.info(error)
-                    order_no = null;
+                    order_no = undefined;
                 }
             });
             console.info(files[i].name + " 识别: " + order_no)
@@ -175,26 +187,61 @@ function pictureOrderInfoProcess(files) {
             } else {
                 errorOrderImg.push(files[i].name);
             }
+
         }).then(function () {
             if (i == files.length - 1) {
                 dto.code = response_success;
                 dto.brushOrderArr = brushOrderNo;
                 dto.errorOrderArr = errorOrderImg;
-                sendMessageToContentScript({cmd: "naval_informa_identifica",pageTabs: undefined,request: dto}, function (response) {
+                sendMessageToContentScript({
+                    cmd: "naval_informa_identifica",
+                    pageTabs: undefined,
+                    request: dto
+                }, function (response) {
                     console.info(response);
                 })
             }
         })
+        setTimeout(function () {
+            console.info("ssssssssss=" + i);
+            dto.code = response_success;
+            dto.allCount = files.length;
+            dto.presentRow = i;
+            dto.name = files[i].name;
+            sendMessageToContentScript({
+                cmd: "ocr_load_process",
+                pageTabs: undefined,
+                request: dto
+            }, function (response) {
+                console.info(response);
+            });
+        }, 10)
     }
 }
 
 // 读取base64信息
-function readFileBase64(img) {
+function readFileBase64(img, row, files) {
     return new Promise(function (resolve, reject) {
         let reader = new FileReader()
         reader.readAsDataURL(img)
         reader.onload = function () {
+             fccccc(img, row, files)
             resolve(this.result)
         }
     })
+}
+
+async function fccccc(img, row, files) {
+    console.info("ssssssssss=" + row);
+    dto.code = response_success;
+    dto.allCount = files.length;
+    dto.presentRow = row;
+    dto.name = files[row].name;
+    sendMessageToContentScript({
+        cmd: "ocr_load_process",
+        pageTabs: undefined,
+        request: dto
+    }, function (response) {
+        console.info(response);
+    });
 }

@@ -19,12 +19,12 @@ var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px
     '</div>';
 var script = '<script type="text/javascript">\n' +
     'function copy_cover () {\n' +
-    '   debugger;var tr_arr = document.getElementById("new_table").children;\n' +
+    '   var tr_arr = document.getElementById("new_table").getElementsByTagName("tr");\n' +
     '   var content = "\\n";\n' +
     '   for (let i = 0; i < tr_arr.length; i++) {\n' +
     '       var td = tr_arr[i];\n' +
     '       for (let j = 0; j < td.children.length; j++) {\n' +
-    '           var innerText = td.children[j].innerText; ' +
+    '           var innerText = td.children[j].innerText; \n' +
     '           if(isRealNum(innerText) && innerText.length >= 11){\n' +
     '               content += "\'"+innerText + "\\t";\n' +
     '           }else{\n' +
@@ -119,11 +119,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     var new_td = $("<td></td>");
                     new_td.css("border", "1px solid #d4d5d5");
                     new_td.css("padding", "10px");
+                    new_td.text(" ");
                     for (let k = 0; k < brushOrderArr.length; k++) {
                         if (order_no == brushOrderArr[k].split("|")[0]) {
                             new_td.text("水军");
                             isExistArr.push(brushOrderArr[k]);
-                            break;
+                            break
                         }
                     }
                     $(new_tr[j]).find("td:nth-child(1)").after(new_td);
@@ -131,6 +132,28 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var differArr = brushOrderArr.concat(isExistArr).filter(function (v, i, arr) {
                     return arr.indexOf(v) === arr.lastIndexOf(v);
                 });
+                var new_diff = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>没有匹配订单：</div></div>");
+                new_diff.css("color", "green");
+                new_diff.css("word-break", "break-all");
+                for (var i = 0; i < differArr.length; i++) {
+                    var span = $("<span></span>");
+                    span.html(differArr[i].split("|")[1] + "&nbsp;&nbsp;&nbsp;");
+                    new_diff.append(span);
+                }
+                var new_error = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>无法识别图片：</div></div>");
+                new_error.css("color", "green");
+                new_error.css("word-break", "break-all");
+                for (var i = 0; i < errorOrderArr.length; i++) {
+                    var span = $("<span></span>");
+                    span.html(errorOrderArr[0] + "&nbsp;&nbsp;&nbsp;");
+                    new_error.append(span);
+                }
+                if (errorOrderArr.length > 0) {
+                    $("#new_table").parent().after(new_error);
+                }
+                if (differArr.length > 0) {
+                    $("#new_table").parent().after(new_diff);
+                }
             }
         }
         sendResponse(response_dto);
@@ -144,9 +167,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
         }
         sendResponse(response_dto);
-    } else if (request.cmd == "service_execute_program_settings") {
+    } else if (request.cmd == "ocr_load_process") {
+        if (request.request.code == response_success) {
+            var allCount = request.request.allCount;
+            var row = request.request.presentRow;
+            var name = request.request.name;
+            console.info("当前处理：" + name + " 共：" + (row + 1) + "/" + allCount);
+        }
         //console.info("点击" + request.request.element);
-        $(request.request.element)[0].click();
+        //$(request.request.element)[0].click();
         sendResponse(response_dto);
     }
 });
