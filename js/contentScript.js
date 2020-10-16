@@ -7,7 +7,7 @@ var timer = null;
 var timer_stop = null;
 var timer_container_count = null;// 图片验证码出现计时40s
 var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px;z-index: 1040;width: 100vw;height: 100vh;background-color: rgb(0, 0, 0);"></div>' +
-    '<div style="position: fixed;z-index: 1041;background-color: white;padding: 16px;border-radius: 5px;font-size: 1rem;left: 50%;top: 40%;transform: translateX(-50%);font-weight: 300;">' +
+    '<div style="position: fixed;z-index: 1041;background-color: white;padding: 16px;padding-bottom: 37px;border-radius: 5px;font-size: 1rem;left: 50%;top: 40%;transform: translateX(-50%);font-weight: 300;">' +
     '<div style="margin-bottom: 10px">' +
     '<button type="button" class="btn btn-outline-primary" style="width: 200px;display: block;margin: 0 auto;" onclick="copy_cover()" >复制</button>' +
     '<button id="cover_close" value="" style="position: absolute;right: 16px;top: 16px;" type="button" class="btn btn-outline-primary" onclick="isClose()">X</button>' +
@@ -15,7 +15,7 @@ var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px
     '<div style="text-align: center;height: auto;max-height: 400px;overflow-y: auto;">' +
     '<div style="display: inline-block;vertical-align: middle;"><img style="display: inline-block;vertical-align: middle;" width="50" src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1602329894089&amp;di=d74ebf0e63b11375bc6b5c687ac394de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.ui.cn%2Fdata%2Ffile%2F4%2F9%2F2%2F2108294.gif">处理中...</div>' +
     '</div>' +
-    '<div id="ocr_load_process"></div>' +
+    '<div id="ocr_load_process" style="font-weight: 400;font-size: 14px;position: absolute;bottom: 16px;"></div>' +
     '<textarea style="margin: 0px;height: 0px;width: 0px;padding: 0;position: absolute;border-top-width: 0px;border-right-width: 0px;" id="textarea_content"></textarea>' +
     '</div>';
 var script = '<script type="text/javascript">\n' +
@@ -92,13 +92,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     new_table = $("<table></table>");
                     $("#cover_close").attr("value", "");
                     $('#cover').css("display", "none");
-                } else if ($(".MDL_container_4-62-1").length > 0 || $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length > 0) {
+                } else if ($("[data-testid='beast-core-modal']").length > 0 || $("[id='captchaClickImg']").length > 0) {
                     timer_container_count++;
                     if (timer_container_count > 100 && timer_container_count < 150) {
+                        console.info("暂停任务");
                         clearInterval(timer);
                         timer = null;
                     }
-                } else if ($(".MDL_container_4-62-1").length == 0 && $(".MDL_body_4-62-1.MDL_noHeader_4-62-1").length == 0 && timer_container_count >= 100) {
+                } else if ($("[data-testid='beast-core-modal']").length == 0 && $("[id='captchaClickImg']").length == 0 && timer_container_count >= 100) {
+                    console.info("重新开启任务");
                     copyOrderAddress();
                     timer_container_count = 0;
                 }
@@ -135,19 +137,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 });
                 var new_diff = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>没有匹配订单：</div></div>");
                 new_diff.css("color", "green");
-                new_diff.css("word-break", "break-all");
+                //new_diff.css("word-break", "break-all");
+                var new_diff_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
+                new_diff.append(new_diff_content);
                 for (var i = 0; i < differArr.length; i++) {
-                    var span = $("<span></span>");
-                    span.html(differArr[i].split("|")[1] + "&nbsp;&nbsp;&nbsp;");
-                    new_diff.append(span);
+                    var div = $("<div style='float: left;'></div>");
+                    div.html(differArr[i].split("|")[1] + "&nbsp;&nbsp;&nbsp;");
+                    new_diff_content.append(div);
                 }
                 var new_error = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>无法识别图片：</div></div>");
                 new_error.css("color", "green");
-                new_error.css("word-break", "break-all");
+                //new_error.css("word-break", "break-all");
+                var new_error_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
+                new_error.append(new_error_content);
                 for (var i = 0; i < errorOrderArr.length; i++) {
-                    var span = $("<span></span>");
-                    span.html(errorOrderArr[0] + "&nbsp;&nbsp;&nbsp;");
-                    new_error.append(span);
+                    var div = $("<div style='float: left;'></div>");
+                    div.html(errorOrderArr[0] + "&nbsp;&nbsp;&nbsp;");
+                    new_error_content.append(div);
                 }
                 if (errorOrderArr.length > 0) {
                     $("#new_table").parent().after(new_error);
@@ -165,9 +171,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             var name = request.request.name;
             console.info("当前处理：" + name + " 共：" + row + "/" + total);
             if (total == row) {
-                var div = $("<div style='font-weight: 400;font-size: 14px;'>完成&nbsp;共&nbsp;<span style='color: #afafaf;'>" + total + "</span></div>");
+                var div = $("<div>完成&nbsp;共&nbsp;<span style='color: #afafaf;'>" + total + "</span></div>");
             } else {
-                var div = $("<div style='font-weight: 400;font-size: 14px;'>当前：<span style='color: #afafaf;'>" + name + "</span>&nbsp;共：<span style='color: #afafaf;'>" + row + "/" + total + "</span></div>");
+                var div = $("<div>当前：<span style='color: #afafaf;'>" + name + "</span>&nbsp;共：<span style='color: #afafaf;'>" + row + "/" + total + "</span></div>");
             }
             $("#ocr_load_process").html(div);
         }
@@ -211,9 +217,9 @@ function copyOrderAddress() {
                 }
             } while (true)
         }
-        var scroll = $(document.querySelector(".TB_outerWrapper_4-62-1.TB_bordered_4-62-1.TB_notTreeStriped_4-62-1").children[0].children[0].children[1].children[0]);
+        var scroll = $("[data-testid='beast-core-table-middle-body']")[0].children[0];
         if (i > 5) {
-            scroll.animate({scrollTop: 60 * (i + 1) - 60}, 1000);
+            $(scroll).animate({scrollTop: 60 * (i + 1) - 60}, 1000);
         }
         var arr_index = [2, 3, 4, 5, 6, 11, 10];
         if (i >= tr_arr.length) {
@@ -251,7 +257,7 @@ function copyOrderAddress() {
                     }
                     new_table.append(new_tr);
                 }
-                var next_PGT = $(".PGT_next_4-62-1");
+                var next_PGT = $("[data-testid='beast-core-pagination-next']");
                 if (next_PGT.length != 0 && next_PGT.attr("class").indexOf("disabled") == -1) { // 判断下一页
                     next_PGT.click();
                     i = -1;
