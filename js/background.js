@@ -1,24 +1,13 @@
 var response_success = "success";
 var response_fail = "fail";
 var requst_source = "background";
-var response_dto = {code: response_success, source: requst_source}
-var dto = {
-    cmd: "",
-    code: "",
-    msg: "",
-    option: "",
-    content: "",
-    type: "",
-    url: "",
-    element: "",
-    value: "",
-    source: requst_source
-};
+var response_dto = {code: response_success, source: requst_source};
+var dto = {source: requst_source};
 var socket;
 
 function getStorageKey() {
     var dto = {code: "", msg: "", url: "", element: "", value: "", source: requst_source};
-    var connKey = sessionStorage.getItem('connKey')
+    var connKey = sessionStorage.getItem('connKey');
     if (connKey != undefined) {
         dto.code = response_success;
         dto.msg = "服务已连接";
@@ -99,7 +88,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         dto.content = request.dataDto.content;
         dto.type = request.dataDto.type;
         var dtostr = JSON.stringify(dto);
-        socket.send(dtostr)
+        socket.send(dtostr);
     }
 });
 
@@ -115,133 +104,74 @@ function sendMessageToContentScript(message, callback) {
     });
 }
 
-//识别水军信息
-function baiduOcrOrderImage(name, imgBase64) {
-    let url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=24.7193727281fa2c5646ffbca147548dda.2592000.1605171490.282335-18040110";
-    var order_no = null;
-    $.ajax({
-        url: url,
-        type: "post",
-        contentType: "application/x-www-form-urlencoded",
-        async: false,
-        data: {image: imgBase64},
-        success: function (response) {
-            console.info(name);
-            console.info(response);
-            if (response.error_code != null) {
-                order_no = null;
-            }
-            for (var i = 0; i < response.words_result.length; i++) {
-                if (response.words_result[i].words.indexOf("订单编号") != -1) {
-                    order_no = response.words_result[i].words.split(":")[1];
-                }
-            }
-        },
-        error: function (error) {
-            console.info(error)
-            order_no = null;
-        }
-    });
-    return order_no;
-}
-
-// 处理图片信息
-function pictureOrderInfoProcess(files) {
-    var brushOrderNo = new Array();
-    var errorOrderImg = new Array();
-    for (let i = 0; i < files.length; i++) {
-        var file = files[i];
-        readFileBase64(file, i, files).then(function (result) {//处理 result
-            var base64Str = result;
-            var startNum = base64Str.indexOf("base64,");
-            startNum = startNum * 1 + 7;
-            var baseStr = base64Str.slice(startNum);
-            //var orderNo = baiduOcrOrderImage(files[i].name, baseStr);
-            let url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=24.7193727281fa2c5646ffbca147548dda.2592000.1605171490.282335-18040110";
-            var order_no = null;
-            $.ajax({
-                url: url,
-                type: "post",
-                contentType: "application/x-www-form-urlencoded",
-                async: false,
-                data: {image: baseStr},
-                success: function (response) {
-                    console.info(response);
-                    if (response.error_code != undefined) {
-                        order_no = undefined;
+//异步递归ocr
+function pictureOrderInfoProcess(files, index, brushOrderNo, errorOrderImg) {
+    let reader = new FileReader();
+    reader.readAsDataURL(files[index]);
+    reader.onload = function () {
+        var baseStr = this.result.replace("data:image/jpeg;base64,", "");
+        $.ajax({
+            url: "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=24.7193727281fa2c5646ffbca147548dda.2592000.1605171490.282335-18040110",
+            type: "post",
+            contentType: "application/x-www-form-urlencoded",
+            async: true,
+            data: {image: baseStr},
+            success: function (response) {
+                console.info(response);
+                var order_no = "";
+                for (var i = 0; i < response.words_result.length; i++) {
+                    if (response.words_result[i].words.indexOf("订单编号") != -1) {
+                        order_no = response.words_result[i].words.split(":")[1];
                     }
-                    for (var i = 0; i < response.words_result.length; i++) {
-                        if (response.words_result[i].words.indexOf("订单编号") != -1) {
-                            order_no = response.words_result[i].words.split(":")[1];
-                        }
-                    }
-                },
-                error: function (error) {
-                    console.info(error)
-                    order_no = undefined;
                 }
-            });
-            console.info(files[i].name + " 识别: " + order_no)
-            if (order_no != undefined) {
-                brushOrderNo.push(order_no + "|" + files[i].name);
-            } else {
-                errorOrderImg.push(files[i].name);
-            }
-
-        }).then(function () {
-            if (i == files.length - 1) {
-                dto.code = response_success;
-                dto.brushOrderArr = brushOrderNo;
-                dto.errorOrderArr = errorOrderImg;
-                sendMessageToContentScript({
-                    cmd: "naval_informa_identifica",
-                    pageTabs: undefined,
-                    request: dto
-                }, function (response) {
-                    console.info(response);
-                })
+                console.info(files[index].name + " 识别: " + order_no);
+                if (order_no != undefined) {
+                    brushOrderNo.push(order_no + "|" + files[index].name);
+                } else {
+                    errorOrderImg.push(files[index].name);
+                }
+                isProcessCompleted(files, index, brushOrderNo, errorOrderImg);
+            },
+            error: function (error) {
+                console.info(error);
+                errorOrderImg.push(files[index].name);
+                isProcessCompleted(files, index, brushOrderNo, errorOrderImg);
             }
         })
-        setTimeout(function () {
-            console.info("ssssssssss=" + i);
-            dto.code = response_success;
-            dto.allCount = files.length;
-            dto.presentRow = i;
-            dto.name = files[i].name;
-            sendMessageToContentScript({
-                cmd: "ocr_load_process",
-                pageTabs: undefined,
-                request: dto
-            }, function (response) {
-                console.info(response);
-            });
-        }, 10)
     }
 }
 
-// 读取base64信息
-function readFileBase64(img, row, files) {
-    return new Promise(function (resolve, reject) {
-        let reader = new FileReader()
-        reader.readAsDataURL(img)
-        reader.onload = function () {
-             fccccc(img, row, files)
-            resolve(this.result)
-        }
-    })
+function isProcessCompleted(files, index, brushOrderNo, errorOrderImg) {
+    loadingProcess(index, files);
+    if (index == files.length - 1) {
+        dto.code = response_success;
+        dto.brushOrderArr = brushOrderNo;
+        dto.errorOrderArr = errorOrderImg;
+        sendMessageToContentScript({
+            cmd: "order_image_loading_Process",
+            pageTabs: undefined,
+            request: dto
+        }, function (response) {
+            console.info(response);
+        })
+    } else {
+        index++;
+        pictureOrderInfoProcess(files, index, brushOrderNo, errorOrderImg);
+    }
 }
 
-async function fccccc(img, row, files) {
-    console.info("ssssssssss=" + row);
+async function loadingProcess(row, files) {
+    console.info("当前进度 => " + row);
     dto.code = response_success;
-    dto.allCount = files.length;
-    dto.presentRow = row;
+    dto.total = files.length;
+    dto.row = row + 1;
     dto.name = files[row].name;
     sendMessageToContentScript({
         cmd: "ocr_load_process",
         pageTabs: undefined,
         request: dto
     }, function (response) {
-        console.info(response);
+        //console.info(response);
+        //return response;
     });
 }

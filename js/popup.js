@@ -2,7 +2,7 @@ var response_success = "success";
 var response_fail = "fail";
 var requst_source = "popup";
 var dto = {code: "", msg: "", url: "", source: requst_source};
-var response_dto = {code: response_success, source: requst_source}
+var response_dto = {code: response_success, source: requst_source};
 var bgFunction = chrome.extension.getBackgroundPage();
 var object = {
     "prompt": "鼠标停留对应按钮显示提示信息",
@@ -42,10 +42,10 @@ $(function () {
             dto.code = response_success;
             sendToContent(value, dto);
             window.close();
-        } else if (value == "naval_informa_identifica") {
+        } else if (value == "order_image_loading_Process") {
             $("#informa_identifica").click();
             $("#informa_identifica").change(function () {
-                bgFunction.pictureOrderInfoProcess(this.files);
+                bgFunction.pictureOrderInfoProcess(this.files, 0, new Array(), new Array());
                 window.close();
             });
         }
@@ -54,7 +54,7 @@ $(function () {
     function sendToContent(cmd, dto) {
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
             bgFunction.sendMessageToContentScript({cmd: cmd, pageTabs: tabs, request: dto}, function (response) {
-                console.info(response)
+                console.info(response);
             });
         });
     }

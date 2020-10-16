@@ -15,6 +15,7 @@ var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px
     '<div style="text-align: center;height: auto;max-height: 400px;overflow-y: auto;">' +
     '<div style="display: inline-block;vertical-align: middle;"><img style="display: inline-block;vertical-align: middle;" width="50" src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1602329894089&amp;di=d74ebf0e63b11375bc6b5c687ac394de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.ui.cn%2Fdata%2Ffile%2F4%2F9%2F2%2F2108294.gif">处理中...</div>' +
     '</div>' +
+    '<div id="ocr_load_process"></div>' +
     '<textarea style="margin: 0px;height: 0px;width: 0px;padding: 0;position: absolute;border-top-width: 0px;border-right-width: 0px;" id="textarea_content"></textarea>' +
     '</div>';
 var script = '<script type="text/javascript">\n' +
@@ -105,7 +106,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             copyOrderAddress();
             sendResponse(response_dto);
         }
-    } else if (request.cmd == "naval_informa_identifica") {
+    } else if (request.cmd == "order_image_loading_Process") {
         if (request.request.code == response_success) {
             var brushOrderArr = request.request.brushOrderArr;
             var errorOrderArr = request.request.errorOrderArr;
@@ -124,7 +125,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         if (order_no == brushOrderArr[k].split("|")[0]) {
                             new_td.text("水军");
                             isExistArr.push(brushOrderArr[k]);
-                            break
+                            break;
                         }
                     }
                     $(new_tr[j]).find("td:nth-child(1)").after(new_td);
@@ -157,25 +158,29 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
         }
         sendResponse(response_dto);
+    } else if (request.cmd == "ocr_load_process") {
+        if (request.request.code == response_success) {
+            var total = request.request.total;
+            var row = request.request.row;
+            var name = request.request.name;
+            console.info("当前处理：" + name + " 共：" + row + "/" + total);
+            if (total == row) {
+                var div = $("<div style='font-weight: 400;font-size: 14px;'>完成&nbsp;共&nbsp;<span style='color: #afafaf;'>" + total + "</span></div>");
+            } else {
+                var div = $("<div style='font-weight: 400;font-size: 14px;'>当前：<span style='color: #afafaf;'>" + name + "</span>&nbsp;共：<span style='color: #afafaf;'>" + row + "/" + total + "</span></div>");
+            }
+            $("#ocr_load_process").html(div);
+        }
+        sendResponse(response_dto);
     } else if (request.cmd == "stop_opera") {
         if (request.request.code == response_success) {
             var cover_close_value = document.getElementById("cover_close").value;
             if (cover_close_value == "") {
                 document.getElementById("cover_close").value = "stop";
             } else if (cover_close_value == "stop") {
-                document.getElementById("cover_close").value = "close"
+                document.getElementById("cover_close").value = "close";
             }
         }
-        sendResponse(response_dto);
-    } else if (request.cmd == "ocr_load_process") {
-        if (request.request.code == response_success) {
-            var allCount = request.request.allCount;
-            var row = request.request.presentRow;
-            var name = request.request.name;
-            console.info("当前处理：" + name + " 共：" + (row + 1) + "/" + allCount);
-        }
-        //console.info("点击" + request.request.element);
-        //$(request.request.element)[0].click();
         sendResponse(response_dto);
     }
 });
@@ -226,7 +231,7 @@ function copyOrderAddress() {
                     break;
                 }
                 j++;
-            } while (true)
+            } while (true);
             if (check) {
                 for (let j = 0; j < tr_arr.length; j++) {
                     var new_tr = $("<tr></tr>");
