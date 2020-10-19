@@ -7,8 +7,9 @@ var bgFunction = chrome.extension.getBackgroundPage();
 var object = {
     "prompt": "鼠标停留对应按钮显示提示信息",
     "open_back": "打开对应后台",
-    "copy_info": "复制订单信息，循环延时点击开始，弹出窗口复制xlsx",
-    "stop_opera": "停止当前的执行操作"
+    "copy_order_address": "智能订单操作点击解锁开始,输出窗口操作表格",
+    "stop_opera": "停止当前的执行操作",
+    "order_image_loading_Process" : "智能订单截图识别,分辨水军信息"
 }
 $(function () {
 
@@ -36,18 +37,24 @@ $(function () {
         }
     });
 
-    $("a.list-group-item").on("click", function (event) {
-        var value = $(this).attr("value");
-        if (value == "copy_order_address") {
-            dto.code = response_success;
-            sendToContent(value, dto);
-            window.close();
-        } else if (value == "order_image_loading_Process") {
-            $("#informa_identifica").click();
-            $("#informa_identifica").change(function () {
-                bgFunction.pictureOrderInfoProcess(this.files, 0, new Array(), new Array());
+    $("a.list-group-item").on("mouseenter mouseleave click", function (event) {
+        if (event.type == "mouseleave") { // 移出
+            $("#prompt").text(object["prompt"])
+        } else if (event.type == "mouseenter") {// 移入
+            $("#prompt").text(object[$(this).attr("value")])
+        } else if (event.type == "click") {
+            var value = $(this).attr("value");
+            if (value == "copy_order_address") {
+                dto.code = response_success;
+                sendToContent(value, dto);
                 window.close();
-            });
+            } else if (value == "order_image_loading_Process") {
+                $("#informa_identifica").click();
+                $("#informa_identifica").change(function () {
+                    bgFunction.pictureOrderInfoProcess(this.files, 0, new Array(), new Array());
+                    window.close();
+                });
+            }
         }
     });
 

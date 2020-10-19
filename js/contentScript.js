@@ -137,7 +137,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 });
                 var new_diff = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>没有匹配订单：</div></div>");
                 new_diff.css("color", "green");
-                //new_diff.css("word-break", "break-all");
                 var new_diff_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
                 new_diff.append(new_diff_content);
                 for (var i = 0; i < differArr.length; i++) {
@@ -147,12 +146,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 }
                 var new_error = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>无法识别图片：</div></div>");
                 new_error.css("color", "green");
-                //new_error.css("word-break", "break-all");
                 var new_error_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
                 new_error.append(new_error_content);
                 for (var i = 0; i < errorOrderArr.length; i++) {
                     var div = $("<div style='float: left;'></div>");
-                    div.html(errorOrderArr[0] + "&nbsp;&nbsp;&nbsp;");
+                    div.html(errorOrderArr[i] + "&nbsp;&nbsp;&nbsp;");
                     new_error_content.append(div);
                 }
                 if (errorOrderArr.length > 0) {
@@ -264,7 +262,6 @@ function copyOrderAddress() {
                 } else {
                     clearInterval(timer);
                     $(document.getElementById("cover").children[1]).css("top", "20%");
-                    $(document.getElementById("cover").children[1]).css("width", "1200px");
                     $(document.getElementById("cover").children[1].children[1]).html(new_table);
                 }
             }

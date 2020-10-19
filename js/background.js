@@ -125,7 +125,7 @@ function pictureOrderInfoProcess(files, index, brushOrderNo, errorOrderImg) {
                     }
                 }
                 console.info(files[index].name + " 识别: " + order_no);
-                if (order_no != undefined) {
+                if (order_no != undefined && order_no != "") {
                     brushOrderNo.push(order_no + "|" + files[index].name);
                 } else {
                     errorOrderImg.push(files[index].name);
