@@ -9,10 +9,11 @@ var object = {
     "open_back": "打开对应后台",
     "copy_order_address": "智能订单操作点击解锁开始,输出窗口操作表格",
     "stop_opera": "停止当前的执行操作",
-    "order_image_loading_Process" : "智能订单截图识别,分辨水军信息"
+    "order_image_loading_Process": "智能订单截图识别,分辨水军信息",
+    "setting_order_table": "设置表格表头,列表数据",
 }
 $(function () {
-
+    bgFunction.initAccess_token();
     $("body").on("contextmenu", function (e) {
         window.event.returnValue = false;
         return false;
@@ -37,7 +38,7 @@ $(function () {
         }
     });
 
-    $("a.list-group-item").on("mouseenter mouseleave click", function (event) {
+    $(".list-group-item.list-group-item-action").on("mouseenter mouseleave click", function (event) {
         if (event.type == "mouseleave") { // 移出
             $("#prompt").text(object["prompt"])
         } else if (event.type == "mouseenter") {// 移入
@@ -54,6 +55,11 @@ $(function () {
                     bgFunction.pictureOrderInfoProcess(this.files, 0, new Array(), new Array());
                     window.close();
                 });
+            }else if (value == "setting_order_table") {
+
+                //dto.code = response_success;
+                //sendToContent(value, dto);
+                //window.close();
             }
         }
     });

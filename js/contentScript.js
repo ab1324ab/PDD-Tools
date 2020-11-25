@@ -219,7 +219,6 @@ function copyOrderAddress() {
         if (i > 5) {
             $(scroll).animate({scrollTop: 60 * (i + 1) - 60}, 1000);
         }
-        var arr_index = [2, 3, 4, 5, 6, 11, 10];
         if (i >= tr_arr.length) {
             let j = 0
             var check = true;
@@ -237,6 +236,7 @@ function copyOrderAddress() {
                 j++;
             } while (true);
             if (check) {
+                var arr_index = [2, 3, 4, 5, 6, 11, 10];
                 for (let j = 0; j < tr_arr.length; j++) {
                     var new_tr = $("<tr></tr>");
                     var tr = tr_arr[j];

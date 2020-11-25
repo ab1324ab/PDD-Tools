@@ -4,6 +4,57 @@ var requst_source = "background";
 var response_dto = {code: response_success, source: requst_source};
 var dto = {source: requst_source};
 var socket;
+var access_token = "";
+
+function initAccess_token() {
+    var _this = this;
+    var token = new Date();
+    var storage = window.localStorage;
+    var access = storage.getItem("access");
+    var isGain = true;
+    if (access != undefined) {
+        access = JSON.parse(access);
+        if (access.expires_in > token.getTime()) {
+            access_token = access.access_token;
+            isGain = false;
+            _this.spinner_show(true, "成功");
+        }
+    }
+    if (isGain) {
+        $.ajax({
+            url: "http://www.nacei.cn/grantAccessToken",
+            type: "post",
+            contentType: "application/x-www-form-urlencoded",
+            async: true,
+            data: {token: token.getTime()},
+            success: function (response) {
+                var client_secret = JSON.parse(response);
+                console.info(client_secret);
+                _this.access_token = client_secret.access_token;
+                var access = {};
+                access.access_token = client_secret.access_token;
+                access.expires_in = client_secret.expires_in;
+                storage.setItem("access", JSON.stringify(access));
+                _this.spinner_show(true, "成功");
+            },
+            error: function (error) {
+                console.info(error)
+                _this.spinner_show(false, "初始化失败");
+            }
+        })
+    }
+}
+
+function spinner_show(succ, message) {
+    var views = chrome.extension.getViews({type: 'popup'});
+    if (succ && views.length > 0) {
+        views[0].document.getElementById("spinnerBorder").style.display = 'none';
+        views[0].document.getElementById("featureList").style.display = 'block';
+    }
+    if (views.length > 0) {
+        views[0].document.getElementById("sms_message").innerText = message;
+    }
+}
 
 function getStorageKey() {
     var dto = {code: "", msg: "", url: "", element: "", value: "", source: requst_source};
@@ -111,7 +162,7 @@ function pictureOrderInfoProcess(files, index, brushOrderNo, errorOrderImg) {
     reader.onload = function () {
         var baseStr = this.result.replace("data:image/jpeg;base64,", "");
         $.ajax({
-            url: "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=24.7193727281fa2c5646ffbca147548dda.2592000.1605171490.282335-18040110",
+            url: "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token=" + access_token,
             type: "post",
             contentType: "application/x-www-form-urlencoded",
             async: true,
