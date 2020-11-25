@@ -53,3 +53,18 @@
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
 }
 
+.kauij{
+    position:absolute;/*这句不能少，否则动不起来*/
+    animation:hurong 0.5s infinite alternate;/*keyframes名称，动画时间，循环*/
+    -moz-animation:hurong 0.5s infinite alternate;/*火狐*/
+    -o-animation:hurong 0.5s infinite alternate;/*opera*/
+    -webkit-animation:hurong 0.5s infinite alternate;/*chrome safari*/
+    -ms-animation:hurong 0.5s infinite alternate;/*ie*/
+}
+@keyframes hurong{
+    0%{transform: translate(2px)}
+    25%{transform: translate(3px)}
+    50%{transform: translate(4px)}
+    75%{transform: translate(5px)}
+    100%{transform: translate(0px)}
+}

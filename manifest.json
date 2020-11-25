@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description" : "PDD操作工具",
   "name": "PDD操作工具",
   "browser_action": {
