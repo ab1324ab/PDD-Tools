@@ -56,6 +56,18 @@ function spinner_show(succ, message) {
     }
 }
 
+function initTableHeader() {
+    dto.code = response_success;
+    sendMessageToContentScript({
+        cmd: "init_gain_table_header",
+        pageTabs: undefined,
+        request: dto
+    }, function (response) {
+        console.info(response);
+        localStorage.setItem("init_table_header", JSON.stringify(response));
+    });
+}
+
 function getStorageKey() {
     var dto = {code: "", msg: "", url: "", element: "", value: "", source: requst_source};
     var connKey = sessionStorage.getItem('connKey');

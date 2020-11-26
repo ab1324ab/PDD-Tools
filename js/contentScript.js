@@ -186,6 +186,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
         }
         sendResponse(response_dto);
+    } else if(request.cmd == "init_gain_table_header"){
+        if (request.request.code == response_success) {
+            // TODO 获取排序对象
+        }
+        sendResponse(response_dto);
     }
 });
 

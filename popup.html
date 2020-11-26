@@ -2,7 +2,7 @@
 <html lang="ch">
 <head>
     <meta charset="UTF-8">
-    <title>辅助主页V1.2</title>
+    <title>辅助主页</title>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/contentScript.css">
 </head>
@@ -22,17 +22,17 @@
                         <div class="spinner-border" role="status"><span class="sr-only"></span></div>
                         <div style="color: red;font-size: 14px;" id="sms_message"></div>
                     </div>
-                    <div id="featureList" style="display: none">
+                    <div id="featureList" style=" display: block; ">
                         <div class="container">
                             <div class="row">
                                 <div class="col-9 list-group-item list-group-item-action" value="copy_order_address" style="cursor: pointer">
-                                    <a href="#" style="color: #495057;text-decoration: none;">复制订单信息</a>
+                                    <a href="#" style="color: #495057;text-decoration: none;">复制信息</a>
                                 </div>
-                                <div class="col-3 list-group-item list-group-item-action" value="setting_order_table" style="cursor: pointer;border-top-width: 1px;">
+                                <div class="col-3 list-group-item list-group-item-action" id="setting_order_table" data-toggle="setting_order_table" value="setting_order_table" style="cursor: pointer;border-top-width: 1px;">
                                     <a href="#" style="color: #495057;display: block;text-align: center;">
                                         <svg width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="bi bi-gear" fill="currentColor" id="gear">
                                             <path fill-rule="evenodd"
-                                                  d="M8.837 1.626c-.246-.835-1.428-.835-1.674 0l-.094.319A1.873 1.873 0 014.377 3.06l-.292-.16c-.764-.415-1.6.42-1.184 1.185l.159.292a1.873 1.873 0 01-1.115 2.692l-.319.094c-.835.246-.835 1.428 0 1.674l.319.094a1.873 1.873 0 011.115 2.693l-.16.291c-.415.764.42 1.6 1.185 1.184l.292-.159a1.873 1.873 0 012.692 1.116l.094.318c.246.835 1.428.835 1.674 0l.094-.319a1.873 1.873 0 012.693-1.115l.291.16c.764.415 1.6-.42 1.184-1.185l-.159-.291a1.873 1.873 0 011.116-2.693l.318-.094c.835-.246.835-1.428 0-1.674l-.319-.094a1.873 1.873 0 01-1.115-2.692l.16-.292c.415-.764-.42-1.6-1.185-1.184l-.291.159A1.873 1.873 0 018.93 1.945l-.094-.319zm-2.633-.283c.527-1.79 3.065-1.79 3.592 0l.094.319a.873.873 0 001.255.52l.292-.16c1.64-.892 3.434.901 2.54 2.541l-.159.292a.873.873 0 00.52 1.255l.319.094c1.79.527 1.79 3.065 0 3.592l-.319.094a.873.873 0 00-.52 1.255l.16.292c.893 1.64-.902 3.434-2.541 2.54l-.292-.159a.873.873 0 00-1.255.52l-.094.319c-.527 1.79-3.065 1.79-3.592 0l-.094-.319a.873.873 0 00-1.255-.52l-.292.16c-1.64.893-3.433-.902-2.54-2.541l.159-.292a.873.873 0 00-.52-1.255l-.319-.094c-1.79-.527-1.79-3.065 0-3.592l.319-.094a.873.873 0 00.52-1.255l-.16-.292c-.892-1.64.902-3.433 2.541-2.54l.292.159a.873.873 0 001.255-.52l.094-.319z"></path>
+                                                    d="M8.837 1.626c-.246-.835-1.428-.835-1.674 0l-.094.319A1.873 1.873 0 014.377 3.06l-.292-.16c-.764-.415-1.6.42-1.184 1.185l.159.292a1.873 1.873 0 01-1.115 2.692l-.319.094c-.835.246-.835 1.428 0 1.674l.319.094a1.873 1.873 0 011.115 2.693l-.16.291c-.415.764.42 1.6 1.185 1.184l.292-.159a1.873 1.873 0 012.692 1.116l.094.318c.246.835 1.428.835 1.674 0l.094-.319a1.873 1.873 0 012.693-1.115l.291.16c.764.415 1.6-.42 1.184-1.185l-.159-.291a1.873 1.873 0 011.116-2.693l.318-.094c.835-.246.835-1.428 0-1.674l-.319-.094a1.873 1.873 0 01-1.115-2.692l.16-.292c.415-.764-.42-1.6-1.185-1.184l-.291.159A1.873 1.873 0 018.93 1.945l-.094-.319zm-2.633-.283c.527-1.79 3.065-1.79 3.592 0l.094.319a.873.873 0 001.255.52l.292-.16c1.64-.892 3.434.901 2.54 2.541l-.159.292a.873.873 0 00.52 1.255l.319.094c1.79.527 1.79 3.065 0 3.592l-.319.094a.873.873 0 00-.52 1.255l.16.292c.893 1.64-.902 3.434-2.541 2.54l-.292-.159a.873.873 0 00-1.255.52l-.094.319c-.527 1.79-3.065 1.79-3.592 0l-.094-.319a.873.873 0 00-1.255-.52l-.292.16c-1.64.893-3.433-.902-2.54-2.541l.159-.292a.873.873 0 00-.52-1.255l-.319-.094c-1.79-.527-1.79-3.065 0-3.592l.319-.094a.873.873 0 00.52-1.255l-.16-.292c-.892-1.64.902-3.433 2.541-2.54l.292.159a.873.873 0 001.255-.52l.094-.319z"></path>
                                             <path fill-rule="evenodd" d="M8 5.754a2.246 2.246 0 100 4.492 2.246 2.246 0 000-4.492zM4.754 8a3.246 3.246 0 116.492 0 3.246 3.246 0 01-6.492 0z"></path>
                                         </svg>
                                     </a>
@@ -40,7 +40,7 @@
                             </div>
                         </div>
                         <div>
-                            <a href="#" value="order_image_loading_Process" class="list-group-item list-group-item-action">水军信息识别</a>
+                            <a href="#" value="order_image_loading_Process" class="list-group-item list-group-item-action">信息识别</a>
                         </div>
                         <div>
                             <a href="#" value="prompt" class="list-group-item list-group-item-action">Page not found 404</a>
@@ -62,7 +62,7 @@
                                             <path fill-rule="evenodd" d="M5 10.5a.5.5 0 00.5.5h5a.5.5 0 000-1H6.707l8.147-8.146a.5.5 0 00-.708-.708L6 9.293V5.5a.5.5 0 00-1 0v5z"></path>
                                         </svg>
                                     </div>
-                                    <span style="display: inline-block;vertical-align: middle;">打开商家后台</span>
+                                    <span style="display: inline-block;vertical-align: middle;">打开后台</span>
                                 </button>
                                 <button value="stop_opera" type="button" class="btn btn-outline-primary btn-sm btn-block">
                                     停止当前操作
@@ -77,9 +77,32 @@
                     </div>
                 </div>
             </div>
-            <div style="height: calc(100% - 66px);position: absolute;max-width: 290px;/* display: none; */;top: 36px;width: calc(100% - 10px);opacity: 1;background-color: white;border-radius: 5px;">
-                <div style="height: 100%;width: 20px;background-color: white;float: right;border-top-right-radius: 5px;border-bottom-right-radius: 5px;text-align: center;font-weight: bold;display: flex;border-left: groove;border-left-width: 1px;">
-                    <div class="kauij" style="align-self: center;margin-left: 2px;">》</div>
+            <div class="drawer" aria-drawer="setting_order_table" style="display: none">
+                <div class="drawerDoor">
+                    <div class="drawerHandle" data-toggle="setting_order_table" style="cursor: pointer;align-self: center;margin-left: 2px;">》</div>
+                </div>
+                <div class="drawer-body">
+                    <div class="row" style="padding: 5px;padding-left: 10px;">
+                        <div class="col-9">Table表头排序</div>
+                        <div class="col-3" style="text-align: right;">
+                            <button value="add_table_handle" style="padding: 0px 8px;margin-top: -4px" type="button" class="btn btn-outline-secondary btn-sm">
+                                <svg width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="bi bi-list-ol" fill="currentColor" id="list-ol">
+                                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5z"></path>
+                                    <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 01-.492.594v.033a.615.615 0 01.569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 00-.342.338v.041zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635V5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <ol id="tableHeader">
+                        <li serial="1">aaaбегемот测试_1</li>
+                        <li serial="2">корм_2</li>
+                        <li serial="3">антон_3</li>
+                        <li serial="4">сало_4</li>
+                        <li serial="5">железосталь_5</li>
+                        <li serial="6">валик_6</li>
+                        <li serial="7">кровать_7</li>
+                        <li serial="8">краб_8</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -104,6 +127,7 @@
 
 </body>
 <script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/popup.js?v=v"></script>
+<script type="text/javascript" src="js/sortable.min.js?v=cc"></script>
+<script type="text/javascript" src="js/popup.js?v=cc"></script>
 <!--<script>document.write("<script type='text/javascript' src='js/popup.js?v="+Math.random()+"'><\/script>");</script>-->
 </html>
