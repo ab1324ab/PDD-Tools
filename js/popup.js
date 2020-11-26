@@ -3,6 +3,7 @@ var response_fail = "fail";
 var requst_source = "popup";
 var dto = {code: "", msg: "", url: "", source: requst_source};
 var response_dto = {code: response_success, source: requst_source};
+var sortable;
 var object = {
     "prompt": "鼠标停留对应按钮显示提示信息",
     "open_back": "打开对应后台",
@@ -25,6 +26,15 @@ $(function () {
     try {
         initBackgroundJavaScript().initAccess_token();
         initBackgroundJavaScript().initTableHeader();
+        var tableHeader = localStorage.getItem("table_header");
+        if( tableHeader == undefined ){
+            tableHeader = localStorage.getItem("init_table_header");
+        }
+        $("#tableHeader").empty();
+        JSON.parse(tableHeader).forEach(v => {
+            var li = $('<li serial="'+v.serial+'">'+v.text+'</li>');
+            $("#tableHeader").append(li);
+        })
     }catch (e) {
         console.info(e);
     }
@@ -101,60 +111,66 @@ $(function () {
                 }else{
                     $(v).css("display","block");
                     $(v).animate({width:"290px"});
+                    if(sortable == undefined){
+                        sortable = Sortable.create(document.getElementById('tableHeader'), {
+                            animation: 150,
+                            store: {//缓存到localStorage
+                                get: function(sortable) {
+                                    var table_header_arr= [];
+                                    var order = [];
+                                    var tableHeader = localStorage.getItem("table_header");
+                                    if(tableHeader != undefined){
+                                        table_header_arr = JSON.parse(tableHeader)
+                                        table_header_arr.forEach(v => {order.push(v.generateId)})
+                                    }
+                                    return order ? order : [];
+                                },
+                                set: function(sortable) {
+                                    var order = sortable.toArray();
+                                    var table_header_arr = [];
+                                    Array.prototype.forEach.call($("#tableHeader").children(),(el => {
+                                        var table_header = {};
+                                        let str = el.tagName + el.className + el.src + el.href + el.textContent,
+                                            i = str.length,
+                                            sum = 0;
+                                        while (i--) {
+                                            sum += str.charCodeAt(i)
+                                        }
+                                        var generateId = sum.toString(36);
+                                        table_header.generateId = generateId;
+                                        table_header.serial = el.getAttribute("serial");
+                                        table_header.text = el.innerText;
+                                        table_header_arr.push(table_header);
+                                    }))
+                                    localStorage.setItem("table_header", JSON.stringify(table_header_arr));
+                                }
+                            },
+                            onAdd: function(evt) {
+                                console.log('onAdd.foo:', [evt.item, evt.from]);
+                            },
+                            onUpdate: function(evt) {
+                                console.log('onUpdate.foo:', [evt.item, evt.from]);
+                            },
+                            onRemove: function(evt) {
+                                console.log('onRemove.foo:', [evt.item, evt.from]);
+                            },
+                            onStart: function(evt) {
+                                console.log('onStart.foo:', [evt.item, evt.from]);
+                            },
+                            onSort: function(evt) {
+                                console.log('onStart.foo:', [evt.item, evt.from]);
+                            },
+                            onEnd: function(evt) {
+                                console.log('onEnd.foo:', [evt.item, evt.from]);
+                            }
+                        });
+                    }
+
                 }
             }
         })
 
     });
 
-    Sortable.create(document.getElementById('tableHeader'), {
-        animation: 150,
-        store: {//缓存到localStorage
-            get: function(sortable) {
-                var table_header_arr= [];
-                var order = [];
-                var tableHeader = localStorage.getItem("table_header");
-                table_header_arr = JSON.parse(tableHeader)
-                table_header_arr.forEach(v => {order.push(v.generateId)})
-                return order ? order : [];
-            },
-            set: function(sortable) {
-                var order = sortable.toArray();
-                var table_header_arr = [];
-                Array.prototype.forEach.call($("#tableHeader").children(),(el => {
-                    var table_header = {};
-                    let str = el.tagName + el.className + el.src + el.href + el.textContent,
-                        i = str.length,
-                        sum = 0;
-                    while (i--) {
-                        sum += str.charCodeAt(i)
-                    }
-                    var generateId = sum.toString(36);
-                    table_header.generateId = generateId;
-                    table_header.serial = el.getAttribute("serial");
-                    table_header.text = el.innerText;
-                    table_header_arr.push(table_header);
-                }))
-                localStorage.setItem("table_header", JSON.stringify(table_header_arr));
-            }
-        },
-        onAdd: function(evt) {
-            console.log('onAdd.foo:', [evt.item, evt.from]);
-        },
-        onUpdate: function(evt) {
-            console.log('onUpdate.foo:', [evt.item, evt.from]);
-        },
-        onRemove: function(evt) {
-            console.log('onRemove.foo:', [evt.item, evt.from]);
-        },
-        onStart: function(evt) {
-            console.log('onStart.foo:', [evt.item, evt.from]);
-        },
-        onSort: function(evt) {
-            console.log('onStart.foo:', [evt.item, evt.from]);
-        },
-        onEnd: function(evt) {
-            console.log('onEnd.foo:', [evt.item, evt.from]);
-        }
-    });
+
 });

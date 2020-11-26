@@ -186,11 +186,30 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
         }
         sendResponse(response_dto);
-    } else if(request.cmd == "init_gain_table_header"){
+    } else if (request.cmd == "init_gain_table_header") {
         if (request.request.code == response_success) {
-            // TODO 获取排序对象
+            var thead = $('[data-testid="beast-core-table-middle-thead"]');
+            if(thead != null){
+                var ths = $(thead).find('[data-testid="beast-core-table-th"]');
+                var tableHeaderArr = [];
+                for (let j = 0; j < ths.length; j++) {
+                    var notTh = ths[j].className.trim().split(" ").length;
+                    if(notTh < 2){
+                        var tableHeader = {};
+                        var thText = ths[j].innerText;
+                        tableHeader.text = thText;
+                        tableHeader.serial = j+1;
+                        tableHeaderArr.push(tableHeader);
+                    }
+                }
+                response_dto.code = response_success;
+                response_dto.content = tableHeaderArr;
+                sendResponse(response_dto);
+            }
+            response_dto.code = response_fail;
+            response_dto.msg = "无";
+            sendResponse(response_dto);
         }
-        sendResponse(response_dto);
     }
 });
 
@@ -242,36 +261,46 @@ function copyOrderAddress() {
             } while (true);
             if (check) {
                 var arr_index = [2, 3, 4, 5, 6, 11, 10];
-                for (let j = 0; j < tr_arr.length; j++) {
-                    var new_tr = $("<tr></tr>");
-                    var tr = tr_arr[j];
-                    for (let k = 0; k < arr_index.length; k++) {
-                        var new_td = $("<td></td>");
-                        new_td.css("border", "1px solid #d4d5d5");
-                        new_td.css("padding", "10px");
-                        if (k == 0) {
-                            new_td.css("width", "200px");
+                sendMessageToBackground({cmd:"gain_table_header",code:response_success},function (response) {
+                    console.info(response)
+                    for (let j = 0; j < tr_arr.length; j++) {
+                        var new_tr = $("<tr></tr>");
+                        var tr = tr_arr[j];
+                        for (let k = 0; k < response.content.length; k++) {
+                            var new_td = $("<td></td>");
+                            new_td.css("border", "1px solid #d4d5d5");
+                            new_td.css("padding", "10px");
+                            if (k == 0) {
+                                new_td.css("width", "200px");
+                            }
+                            var serial = parseInt(response.content[k].serial);
+                            var text_td = $(tr).children().eq(serial).text().replace(".beast-core-ellipsis-2{-webkit-line-clamp:2;-webkit-box-orient: vertical;}", "");
+                            text_td = text_td.replace("回收单号", "");
+                            text_td = text_td.replace("锁定", "");
+                            new_td.text(text_td);
+                            new_tr.append(new_td);
                         }
-                        var text_td = $(tr).find(":nth-child(" + arr_index[k] + ")").text().replace(".beast-core-ellipsis-2{-webkit-line-clamp:2;-webkit-box-orient: vertical;}", "");
-                        text_td = text_td.replace("回收单号", "");
-                        text_td = text_td.replace("锁定", "");
-                        new_td.text(text_td);
-                        new_tr.append(new_td);
+                        new_table.append(new_tr);
                     }
-                    new_table.append(new_tr);
-                }
-                var next_PGT = $("[data-testid='beast-core-pagination-next']");
-                if (next_PGT.length != 0 && next_PGT.attr("class").indexOf("disabled") == -1) { // 判断下一页
-                    next_PGT.click();
-                    i = -1;
-                } else {
-                    clearInterval(timer);
-                    $(document.getElementById("cover").children[1]).css("top", "20%");
-                    $(document.getElementById("cover").children[1].children[1]).html(new_table);
-                }
+                    var next_PGT = $("[data-testid='beast-core-pagination-next']");
+                    // if (next_PGT.length != 0 && next_PGT.attr("class").indexOf("disabled") == -1) { // 判断下一页
+                    //     next_PGT.click();
+                    //     i = -1;
+                    // } else {
+                        clearInterval(timer);
+                        $(document.getElementById("cover").children[1]).css("top", "20%");
+                        $(document.getElementById("cover").children[1].children[1]).html(new_table);
+                    // }
+                })
+
             }
         }
         i++;
     }), 10000);
 }
 
+function sendMessageToBackground(message, callback) {
+    chrome.runtime.sendMessage(message, res => {
+        callback(res);
+    })
+}

@@ -64,7 +64,10 @@ function initTableHeader() {
         request: dto
     }, function (response) {
         console.info(response);
-        localStorage.setItem("init_table_header", JSON.stringify(response));
+        if (response.code == response_success) {
+            localStorage.setItem("init_table_header", JSON.stringify(response.content));
+        }
+        //localStorage.setItem("init_table_header", JSON.stringify(response));
     });
 }
 
@@ -152,6 +155,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         dto.type = request.dataDto.type;
         var dtostr = JSON.stringify(dto);
         socket.send(dtostr);
+    }else if(request.cmd == 'gain_table_header'){
+        if (request.code == response_success) {
+            var tableHeader = localStorage.getItem("table_header");
+            dto.cmd = "send_response";
+            dto.code = response_success;
+            dto.content = JSON.parse(tableHeader);
+            sendResponse(dto);
+        }
     }
 });
 
