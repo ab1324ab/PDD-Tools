@@ -25,19 +25,33 @@ function initBackgroundJavaScript(){
 $(function () {
     try {
         initBackgroundJavaScript().initAccess_token();
-        initBackgroundJavaScript().initTableHeader();
-        var tableHeader = localStorage.getItem("table_header");
-        if( tableHeader == undefined ){
-            tableHeader = localStorage.getItem("init_table_header");
-        }
-        $("#tableHeader").empty();
-        JSON.parse(tableHeader).forEach(v => {
-            var li = $('<li serial="'+v.serial+'">'+v.text+'</li>');
-            $("#tableHeader").append(li);
-        })
+        initBackgroundJavaScript().initTableHeader(function (response) {
+            var tableHeader = localStorage.getItem("table_header");
+            if( tableHeader == undefined ){
+                tableHeader = response;
+            }
+            $("#tableHeader").empty();
+            var tableHeaderArr = JSON.parse(tableHeader);
+            tableHeaderArr.forEach(v => {
+                var li = $('<li serial="'+v.serial+'"><span>'+v.text+'</span><img class="removeTableHeader" style="cursor: pointer;position: absolute;left: 15px;margin-top: 5px;" src="../images/delete.png"/></li>');
+                $("#tableHeader").append(li);
+            })
+            let diffArr = $(response).not(tableHeaderArr).toArray();
+            diffArr.forEach(v => {
+                var li = $('<li serial="'+v.serial+'"><span>'+v.text+'</span><img class="addTableHeader" style="cursor: pointer;position: absolute;left: 15px;margin-top: 5px;" src="../images/delete.png"/></li>');
+                $("#newTableHeader").append(li);
+            })
+
+        });
     }catch (e) {
         console.info(e);
     }
+
+    $(".removeTableHeader").click(function () {
+        $(this).parent().remove()
+        console.info(this);
+        sortable.save();
+    })
 
     $("body").on("contextmenu", function (e) {
         window.event.returnValue = false;
@@ -103,12 +117,14 @@ $(function () {
         Array.prototype.forEach.call($("[aria-drawer]"),function(v){
             var aria = $(v).attr("aria-drawer");
             if(toggle == aria) {
-                var display = $(v).css("display")
+                var display = $(v).parent().css("display")
                 if(display == "block"){
                     $(v).animate({width:"0px"},function () {
                         $(v).css("display","none");
+                        $(v).parent().css("display","none");
                     });
                 }else{
+                    $(v).parent().css("display","block");
                     $(v).css("display","block");
                     $(v).animate({width:"290px"});
                     if(sortable == undefined){

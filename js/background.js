@@ -56,7 +56,7 @@ function spinner_show(succ, message) {
     }
 }
 
-function initTableHeader() {
+function initTableHeader(callback) {
     dto.code = response_success;
     sendMessageToContentScript({
         cmd: "init_gain_table_header",
@@ -66,6 +66,7 @@ function initTableHeader() {
         console.info(response);
         if (response.code == response_success) {
             localStorage.setItem("init_table_header", JSON.stringify(response.content));
+            callback(JSON.stringify(response.content));
         }
         //localStorage.setItem("init_table_header", JSON.stringify(response));
     });

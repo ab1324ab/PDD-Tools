@@ -6,17 +6,22 @@ var response_dto = {code: response_success, source: requst_source};
 var timer = null;
 var timer_stop = null;
 var timer_container_count = null;// 图片验证码出现计时40s
-var cover_content = '<div style="position: fixed;top: 0px;opacity: 0.5;left: 0px;z-index: 1040;width: 100vw;height: 100vh;background-color: rgb(0, 0, 0);"></div>' +
-    '<div style="position: fixed;z-index: 1041;background-color: white;padding: 16px;padding-bottom: 37px;border-radius: 5px;font-size: 1rem;left: 50%;top: 40%;transform: translateX(-50%);font-weight: 300;">' +
-    '<div style="margin-bottom: 10px">' +
-    '<button type="button" class="btn btn-outline-primary" style="width: 200px;display: block;margin: 0 auto;" onclick="copy_cover()" >复制</button>' +
-    '<button id="cover_close" value="" style="position: absolute;right: 16px;top: 16px;" type="button" class="btn btn-outline-primary" onclick="isClose()">X</button>' +
-    '</div>' +
-    '<div style="text-align: center;height: auto;max-height: 400px;overflow-y: auto;">' +
-    '<div style="display: inline-block;vertical-align: middle;"><img style="display: inline-block;vertical-align: middle;" width="50" src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1602329894089&amp;di=d74ebf0e63b11375bc6b5c687ac394de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.ui.cn%2Fdata%2Ffile%2F4%2F9%2F2%2F2108294.gif">处理中...</div>' +
-    '</div>' +
-    '<div id="ocr_load_process" style="font-weight: 400;font-size: 14px;position: absolute;bottom: 16px;"></div>' +
-    '<textarea style="margin: 0px;height: 0px;width: 0px;padding: 0;position: absolute;border-top-width: 0px;border-right-width: 0px;" id="textarea_content"></textarea>' +
+var cover_content =
+    '<div style="position: fixed;top: 0px;left: 0px;z-index: 1040;width: 100vw;height: 100vh;background-color: rgba(0, 0, 0, 0.5);">' +
+    '   <div style="position: absolute;background-color: white;padding: 16px;padding-bottom: 37px;border-radius: 5px;font-size: 1rem;right: auto;top: 40%;font-weight: 300;margin: 0 auto;left: 50%;margin-left: -116px;">' +
+    '       <div style="margin-bottom: 10px">' +
+    '           <button type="button" class="btn btn-outline-primary" style="width: 200px;display: block;margin: 0 auto;" onclick="copy_cover()" >复制</button>' +
+    '           <button id="cover_close" value="" style="position: absolute;right: 16px;top: 16px;" type="button" class="btn btn-outline-primary" onclick="isClose()">X</button>' +
+    '       </div>' +
+    '       <div style="text-align: center;height: auto;max-height: 400px;overflow-y: auto;">' +
+    '           <div style="display: inline-block;vertical-align: middle;">' +
+    '               <img style="display: inline-block;vertical-align: middle;" width="50" src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1602329894089&amp;di=d74ebf0e63b11375bc6b5c687ac394de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.ui.cn%2Fdata%2Ffile%2F4%2F9%2F2%2F2108294.gif">' +
+    '               <span>处理中...</span>' +
+    '           </div>' +
+    '       </div>' +
+    '       <div id="ocr_load_process" style="font-weight: 400;font-size: 14px;position: absolute;bottom: 16px;">cccc</div>' +
+    '       <textarea style="margin: 0px;height: 0px;width: 0px;padding: 0;position: absolute;border-top-width: 0px;border-right-width: 0px;" id="textarea_content"></textarea>' +
+    '   </div>' +
     '</div>';
 var script = '<script type="text/javascript">\n' +
     'function copy_cover () {\n' +
@@ -76,8 +81,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     clearInterval(timer);
                     if (new_table[0].children.length > 0) {
                         if ($("#new_table").length == 0) {
-                            $(document.getElementById("cover").children[1]).css("top", "20%");
-                            $(document.getElementById("cover").children[1].children[1]).html(new_table);
+                            writeInCover(new_table);
                         }
                     } else {
                         $("#cover_close").attr("value", "close");
@@ -205,10 +209,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 response_dto.code = response_success;
                 response_dto.content = tableHeaderArr;
                 sendResponse(response_dto);
+            } else {
+                response_dto.code = response_fail;
+                response_dto.msg = "无";
+                sendResponse(response_dto);
             }
-            response_dto.code = response_fail;
-            response_dto.msg = "无";
-            sendResponse(response_dto);
+
         }
     }
 });
@@ -260,20 +266,23 @@ function copyOrderAddress() {
                 j++;
             } while (true);
             if (check) {
-                var arr_index = [2, 3, 4, 5, 6, 11, 10];
+                var arr_index = [{serial:2}, {serial:3}, {serial:4}, {serial:5}, {serial:6}, {serial:11}, {serial:10}];
                 sendMessageToBackground({cmd:"gain_table_header",code:response_success},function (response) {
                     console.info(response)
+                    if(response.content != undefined){
+                        arr_index =  response.content;
+                    }
                     for (let j = 0; j < tr_arr.length; j++) {
                         var new_tr = $("<tr></tr>");
                         var tr = tr_arr[j];
-                        for (let k = 0; k < response.content.length; k++) {
+                        for (let k = 0; k < arr_index.length; k++) {
                             var new_td = $("<td></td>");
                             new_td.css("border", "1px solid #d4d5d5");
                             new_td.css("padding", "10px");
                             if (k == 0) {
                                 new_td.css("width", "200px");
                             }
-                            var serial = parseInt(response.content[k].serial);
+                            var serial = parseInt(arr_index[k].serial);
                             var text_td = $(tr).children().eq(serial).text().replace(".beast-core-ellipsis-2{-webkit-line-clamp:2;-webkit-box-orient: vertical;}", "");
                             text_td = text_td.replace("回收单号", "");
                             text_td = text_td.replace("锁定", "");
@@ -288,8 +297,7 @@ function copyOrderAddress() {
                     //     i = -1;
                     // } else {
                         clearInterval(timer);
-                        $(document.getElementById("cover").children[1]).css("top", "20%");
-                        $(document.getElementById("cover").children[1].children[1]).html(new_table);
+                        writeInCover(new_table);
                     // }
                 })
 
@@ -297,6 +305,24 @@ function copyOrderAddress() {
         }
         i++;
     }), 10000);
+}
+
+/**
+ * 写入表格内容
+ * @param tableContent
+ */
+function writeInCover(tableContent) {
+    var cover = $(document.getElementById("cover").children[0].children[0]);
+    $(cover).css("left", "0");
+    $(cover).css("top", "0");
+    $(cover).css("margin-left", "0px");
+    $(document.getElementById("cover").children[0].children[0].children[1]).html(tableContent);
+    var coverw = $(cover).width();
+    var coverow = $(cover).outerWidth();
+    var coverml = (coverw + (coverow - coverw)) / 2;
+    $(cover).css("margin-left", "-" + coverml + "px");
+    $(cover).css("top", "20%");
+    $(cover).css("left", "50%");
 }
 
 function sendMessageToBackground(message, callback) {
