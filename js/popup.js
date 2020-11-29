@@ -12,11 +12,12 @@ var object = {
     "order_image_loading_Process": "智能订单截图识别,分辨水军信息",
     "setting_order_table": "设置表格表头,列表数据",
 }
-function initBackgroundJavaScript(){
+
+function initBackgroundJavaScript() {
     try {
         var bgFunction = chrome.extension.getBackgroundPage();
         return bgFunction;
-    }catch (e) {
+    } catch (e) {
         console.info(e);
         return null;
     }
@@ -26,32 +27,72 @@ $(function () {
     try {
         initBackgroundJavaScript().initAccess_token();
         initBackgroundJavaScript().initTableHeader(function (response) {
-            var tableHeader = localStorage.getItem("table_header");
-            if( tableHeader == undefined ){
-                tableHeader = response;
+            var tableHeader = [];
+            var tableHeaderTmp = localStorage.getItem("table_header");
+            if (tableHeaderTmp != undefined) {
+                tableHeader = JSON.parse(tableHeaderTmp);
             }
             $("#tableHeader").empty();
-            var tableHeaderArr = JSON.parse(tableHeader);
-            tableHeaderArr.forEach(v => {
-                var li = $('<li serial="'+v.serial+'"><span>'+v.text+'</span><img class="removeTableHeader" style="cursor: pointer;position: absolute;left: 15px;margin-top: 5px;" src="../images/delete.png"/></li>');
-                $("#tableHeader").append(li);
-            })
-            let diffArr = $(response).not(tableHeaderArr).toArray();
-            diffArr.forEach(v => {
-                var li = $('<li serial="'+v.serial+'"><span>'+v.text+'</span><img class="addTableHeader" style="cursor: pointer;position: absolute;left: 15px;margin-top: 5px;" src="../images/delete.png"/></li>');
+            if (tableHeader.length > 0) {
+                tableHeader.forEach((v, i) => {
+                    var li = $('<li serial="' + v.serial + '"><img class="removeTableHeader table-Header-li" style="margin-left: -50px;" src="../images/delete.png"/><span>' + v.text + '</span></li>');
+                    $("#tableHeader").append(li);
+                })
+            }
+            let diffArr = [];
+            var initTableHeaderTmp = response;
+            if (initTableHeaderTmp != undefined) {
+                var initTableHeaderArr = JSON.parse(initTableHeaderTmp);
+                if (tableHeader.length > 0) {
+                    initTableHeaderArr.forEach(v => {
+                        var exist = false;
+                        tableHeader.forEach(vt => {
+                            if (v.text == vt.text) {
+                                exist = true;
+                                vt.serial = v.serial
+                                return;
+                            }
+                        });
+                        if (!exist) {
+                            diffArr.push(v);
+                        }
+                    });
+                    localStorage.setItem("table_header", JSON.stringify(tableHeader));
+                } else {
+                    diffArr = initTableHeaderArr;
+                }
+            }
+            $("#newTableHeader").empty();
+            diffArr.forEach((v, i) => {
+                var li = $('<li serial="' + v.serial + '"><img class="addTableHeader table-Header-li" style="margin-left: -40px;" src="../images/add.png"/><span>' + v.text + '</span></li>');
                 $("#newTableHeader").append(li);
-            })
-
+            });
         });
-    }catch (e) {
+
+        $("#tableHeader").on("click", function (event) {
+            if (event.target.nodeName == "IMG") {
+                var text = $(event.target).next().text();
+                var serial = $(event.target).parent().attr("serial");
+                var li = $('<li serial="' + serial + '"><img class="addTableHeader table-Header-li" style="margin-left: -40px;" src="../images/add.png"/><span>' + text + '</span></li>');
+                $("#newTableHeader").append(li);
+                $(event.target).parent().remove()
+                sortable.save();
+            }
+        })
+
+        $("#newTableHeader").on("click", function (event) {
+            if (event.target.nodeName == "IMG") {
+                var text = $(event.target).next().text();
+                var serial = $(event.target).parent().attr("serial");
+                var li = $('<li serial="' + serial + '"><img class="removeTableHeader table-Header-li" style="margin-left: -50px;" src="../images/delete.png"/><span>' + text + '</span></li>');
+                $("#tableHeader").append(li);
+                $(event.target).parent().remove();
+                sortable.save();
+            }
+        })
+    } catch (e) {
         console.info(e);
     }
-
-    $(".removeTableHeader").click(function () {
-        $(this).parent().remove()
-        console.info(this);
-        sortable.save();
-    })
 
     $("body").on("contextmenu", function (e) {
         window.event.returnValue = false;
@@ -77,7 +118,6 @@ $(function () {
             } else if ($(this).val() == "add_table_handle") {
                 // 已在其他地方绑定
             }
-
         }
     });
 
@@ -98,7 +138,7 @@ $(function () {
                     initBackgroundJavaScript().pictureOrderInfoProcess(this.files, 0, new Array(), new Array());
                     window.close();
                 });
-            }else if (value == "setting_order_table") {
+            } else if (value == "setting_order_table") {
                 // 已在其他地方绑定
             }
         }
@@ -106,82 +146,100 @@ $(function () {
 
     function sendToContent(cmd, dto) {
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-            initBackgroundJavaScript().sendMessageToContentScript({cmd: cmd, pageTabs: tabs, request: dto}, function (response) {
+            initBackgroundJavaScript().sendMessageToContentScript({
+                cmd: cmd,
+                pageTabs: tabs,
+                request: dto
+            }, function (response) {
                 console.info(response);
             });
         });
     }
 
-    $("[data-toggle]").click(function(){
+    $("[data-toggle]").click(function () {
         var toggle = $(this).attr("data-toggle");
-        Array.prototype.forEach.call($("[aria-drawer]"),function(v){
+        Array.prototype.forEach.call($("[aria-drawer]"), function (v) {
             var aria = $(v).attr("aria-drawer");
-            if(toggle == aria) {
+            if (toggle == aria) {
                 var display = $(v).parent().css("display")
-                if(display == "block"){
-                    $(v).animate({width:"0px"},function () {
-                        $(v).css("display","none");
-                        $(v).parent().css("display","none");
+                if (display == "block") {
+                    $(v).animate({width: "0px"}, function () {
+                        $(v).css("display", "none");
+                        $(v).parent().css("display", "none");
                     });
-                }else{
-                    $(v).parent().css("display","block");
-                    $(v).css("display","block");
-                    $(v).animate({width:"290px"});
-                    if(sortable == undefined){
+                } else {
+                    $(v).parent().css("display", "block");
+                    $(v).css("display", "block");
+                    $(v).animate({width: "290px"});
+                    if (sortable == undefined) {
                         sortable = Sortable.create(document.getElementById('tableHeader'), {
                             animation: 150,
                             store: {//缓存到localStorage
-                                get: function(sortable) {
-                                    var table_header_arr= [];
+                                get: function (sortable) {
+                                    var table_header_arr = [];
                                     var order = [];
                                     var tableHeader = localStorage.getItem("table_header");
-                                    if(tableHeader != undefined){
+                                    if (tableHeader != undefined) {
                                         table_header_arr = JSON.parse(tableHeader)
-                                        table_header_arr.forEach(v => {order.push(v.generateId)})
+                                        table_header_arr.forEach(v => {
+                                            order.push(v.generateId)
+                                        })
                                     }
                                     return order ? order : [];
                                 },
-                                set: function(sortable) {
+                                set: function (sortable) {
                                     var order = sortable.toArray();
-                                    var table_header_arr = [];
-                                    Array.prototype.forEach.call($("#tableHeader").children(),(el => {
-                                        var table_header = {};
-                                        let str = el.tagName + el.className + el.src + el.href + el.textContent,
-                                            i = str.length,
-                                            sum = 0;
-                                        while (i--) {
-                                            sum += str.charCodeAt(i)
+                                        var table_header_arr = [];
+                                        Array.prototype.forEach.call($("#tableHeader").children(), (el => {
+                                            var table_header = {};
+                                            let str = el.tagName + el.className + el.src + el.href + el.textContent,
+                                                i = str.length,
+                                                sum = 0;
+                                            while (i--) {
+                                                sum += str.charCodeAt(i)
+                                            }
+                                            var generateId = sum.toString(36);
+                                            table_header.generateId = generateId;
+                                            table_header.serial = el.getAttribute("serial");
+                                            table_header.text = el.innerText;
+                                            table_header_arr.push(table_header);
+                                        }));
+                                        var content = localStorage.getItem("init_table_header");
+                                        if (content != undefined) {
+                                            if (table_header_arr.length > 0) {
+                                                var initTableHeaderArr = JSON.parse(content);
+                                                initTableHeaderArr.forEach(v => {
+                                                    table_header_arr.forEach(vt => {
+                                                        if (v.text == vt.text) {
+                                                            vt.serial = v.serial;
+                                                        }
+                                                    })
+                                                })
+                                            }
+                                            localStorage.setItem("table_header", JSON.stringify(table_header_arr));
                                         }
-                                        var generateId = sum.toString(36);
-                                        table_header.generateId = generateId;
-                                        table_header.serial = el.getAttribute("serial");
-                                        table_header.text = el.innerText;
-                                        table_header_arr.push(table_header);
-                                    }))
-                                    localStorage.setItem("table_header", JSON.stringify(table_header_arr));
                                 }
                             },
-                            onAdd: function(evt) {
+                            onAdd: function (evt) {
                                 console.log('onAdd.foo:', [evt.item, evt.from]);
                             },
-                            onUpdate: function(evt) {
+                            onUpdate: function (evt) {
                                 console.log('onUpdate.foo:', [evt.item, evt.from]);
                             },
-                            onRemove: function(evt) {
+                            onRemove: function (evt) {
                                 console.log('onRemove.foo:', [evt.item, evt.from]);
                             },
-                            onStart: function(evt) {
+                            onStart: function (evt) {
                                 console.log('onStart.foo:', [evt.item, evt.from]);
                             },
-                            onSort: function(evt) {
+                            onSort: function (evt) {
                                 console.log('onStart.foo:', [evt.item, evt.from]);
                             },
-                            onEnd: function(evt) {
+                            onEnd: function (evt) {
                                 console.log('onEnd.foo:', [evt.item, evt.from]);
                             }
                         });
                     }
-
                 }
             }
         })

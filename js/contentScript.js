@@ -19,7 +19,7 @@ var cover_content =
     '               <span>处理中...</span>' +
     '           </div>' +
     '       </div>' +
-    '       <div id="ocr_load_process" style="font-weight: 400;font-size: 14px;position: absolute;bottom: 16px;">cccc</div>' +
+    '       <div id="ocr_load_process" style="font-weight: 400;font-size: 14px;position: absolute;bottom: 16px;"></div>' +
     '       <textarea style="margin: 0px;height: 0px;width: 0px;padding: 0;position: absolute;border-top-width: 0px;border-right-width: 0px;" id="textarea_content"></textarea>' +
     '   </div>' +
     '</div>';
@@ -114,56 +114,69 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         }
     } else if (request.cmd == "order_image_loading_Process") {
         if (request.request.code == response_success) {
-            var brushOrderArr = request.request.brushOrderArr;
-            var errorOrderArr = request.request.errorOrderArr;
-            console.info(brushOrderArr);
-            console.info(errorOrderArr);
-            var isExistArr = new Array();
-            if ($("#new_table").length == 1) {
-                var new_tr = $("#new_table").find("tr");
-                for (let j = 0; j < new_tr.length; j++) {
-                    var order_no = $(new_tr[j]).find("td:nth-child(1)").text();
-                    var new_td = $("<td></td>");
-                    new_td.css("border", "1px solid #d4d5d5");
-                    new_td.css("padding", "10px");
-                    new_td.text(" ");
-                    for (let k = 0; k < brushOrderArr.length; k++) {
-                        if (order_no == brushOrderArr[k].split("|")[0]) {
-                            new_td.text("水军");
-                            isExistArr.push(brushOrderArr[k]);
-                            break;
+            sendMessageToBackground({cmd: "gain_table_header", code: response_success}, function (response) {
+                if (response.code == response_success) {
+                    var signIndex = 0;
+                    if (response.content != undefined) {
+                        response.content.forEach((v, i) => {
+                            if (v.text == '订单标识') {
+                                signIndex = i;
+                                return;
+                            }
+                        })
+                    }
+                    var brushOrderArr = request.request.brushOrderArr;
+                    var errorOrderArr = request.request.errorOrderArr;
+                    console.info(brushOrderArr);
+                    console.info(errorOrderArr);
+                    var isExistArr = new Array();
+                    if ($("#new_table").length == 1) {
+                        var new_tr = $("#new_table").find("tr");
+                        for (let j = 0; j < new_tr.length; j++) {
+                            var order_no = $(new_tr[j]).find("td:nth-child(1)").text();
+                            var new_td = $("<td></td>");
+                            new_td.css("border", "1px solid #d4d5d5");
+                            new_td.css("padding", "10px");
+                            new_td.text(" ");
+                            for (let k = 0; k < brushOrderArr.length; k++) {
+                                if (order_no == brushOrderArr[k].split("|")[0]) {
+                                    new_td.text("水军");
+                                    isExistArr.push(brushOrderArr[k]);
+                                    break;
+                                }
+                            }
+                            $(new_tr[j]).find("td:nth-child(" + signIndex + ")").after(new_td);
+                        }
+                        var differArr = brushOrderArr.concat(isExistArr).filter(function (v, i, arr) {
+                            return arr.indexOf(v) === arr.lastIndexOf(v);
+                        });
+                        var new_diff = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>没有匹配订单：</div></div>");
+                        new_diff.css("color", "green");
+                        var new_diff_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
+                        new_diff.append(new_diff_content);
+                        for (var i = 0; i < differArr.length; i++) {
+                            var div = $("<div style='float: left;'></div>");
+                            div.html(differArr[i].split("|")[1] + "&nbsp;&nbsp;&nbsp;");
+                            new_diff_content.append(div);
+                        }
+                        var new_error = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>无法识别图片：</div></div>");
+                        new_error.css("color", "green");
+                        var new_error_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
+                        new_error.append(new_error_content);
+                        for (var i = 0; i < errorOrderArr.length; i++) {
+                            var div = $("<div style='float: left;'></div>");
+                            div.html(errorOrderArr[i] + "&nbsp;&nbsp;&nbsp;");
+                            new_error_content.append(div);
+                        }
+                        if (errorOrderArr.length > 0) {
+                            $("#new_table").parent().after(new_error);
+                        }
+                        if (differArr.length > 0) {
+                            $("#new_table").parent().after(new_diff);
                         }
                     }
-                    $(new_tr[j]).find("td:nth-child(1)").after(new_td);
                 }
-                var differArr = brushOrderArr.concat(isExistArr).filter(function (v, i, arr) {
-                    return arr.indexOf(v) === arr.lastIndexOf(v);
-                });
-                var new_diff = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>没有匹配订单：</div></div>");
-                new_diff.css("color", "green");
-                var new_diff_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
-                new_diff.append(new_diff_content);
-                for (var i = 0; i < differArr.length; i++) {
-                    var div = $("<div style='float: left;'></div>");
-                    div.html(differArr[i].split("|")[1] + "&nbsp;&nbsp;&nbsp;");
-                    new_diff_content.append(div);
-                }
-                var new_error = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>无法识别图片：</div></div>");
-                new_error.css("color", "green");
-                var new_error_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
-                new_error.append(new_error_content);
-                for (var i = 0; i < errorOrderArr.length; i++) {
-                    var div = $("<div style='float: left;'></div>");
-                    div.html(errorOrderArr[i] + "&nbsp;&nbsp;&nbsp;");
-                    new_error_content.append(div);
-                }
-                if (errorOrderArr.length > 0) {
-                    $("#new_table").parent().after(new_error);
-                }
-                if (differArr.length > 0) {
-                    $("#new_table").parent().after(new_diff);
-                }
-            }
+            })
         }
         sendResponse(response_dto);
     } else if (request.cmd == "ocr_load_process") {
@@ -193,18 +206,24 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     } else if (request.cmd == "init_gain_table_header") {
         if (request.request.code == response_success) {
             var thead = $('[data-testid="beast-core-table-middle-thead"]');
-            if(thead != null){
+            if (thead != null) {
                 var ths = $(thead).find('[data-testid="beast-core-table-th"]');
                 var tableHeaderArr = [];
                 for (let j = 0; j < ths.length; j++) {
                     var notTh = ths[j].className.trim().split(" ").length;
-                    if(notTh < 2){
+                    if (notTh < 2) {
                         var tableHeader = {};
                         var thText = ths[j].innerText;
                         tableHeader.text = thText;
-                        tableHeader.serial = j+1;
+                        tableHeader.serial = j + 1;
                         tableHeaderArr.push(tableHeader);
                     }
+                }
+                if (ths.length > 0) {
+                    var tableHeader = {};
+                    tableHeader.text = "订单标识（水军识别专用）";
+                    tableHeader.serial = 0;
+                    tableHeaderArr.push(tableHeader);
                 }
                 response_dto.code = response_success;
                 response_dto.content = tableHeaderArr;
@@ -266,11 +285,11 @@ function copyOrderAddress() {
                 j++;
             } while (true);
             if (check) {
-                var arr_index = [{serial:2}, {serial:3}, {serial:4}, {serial:5}, {serial:6}, {serial:11}, {serial:10}];
-                sendMessageToBackground({cmd:"gain_table_header",code:response_success},function (response) {
+                var arr_index = [{serial: 2}, {serial: 3}, {serial: 4}, {serial: 5}, {serial: 6}, {serial: 11}, {serial: 10}];
+                sendMessageToBackground({cmd: "gain_table_header", code: response_success}, function (response) {
                     console.info(response)
-                    if(response.content != undefined){
-                        arr_index =  response.content;
+                    if (response.content != undefined) {
+                        arr_index = response.content;
                     }
                     for (let j = 0; j < tr_arr.length; j++) {
                         var new_tr = $("<tr></tr>");
@@ -283,6 +302,9 @@ function copyOrderAddress() {
                                 new_td.css("width", "200px");
                             }
                             var serial = parseInt(arr_index[k].serial);
+                            if (serial == 0) {
+                                continue;
+                            }
                             var text_td = $(tr).children().eq(serial).text().replace(".beast-core-ellipsis-2{-webkit-line-clamp:2;-webkit-box-orient: vertical;}", "");
                             text_td = text_td.replace("回收单号", "");
                             text_td = text_td.replace("锁定", "");
@@ -292,13 +314,13 @@ function copyOrderAddress() {
                         new_table.append(new_tr);
                     }
                     var next_PGT = $("[data-testid='beast-core-pagination-next']");
-                    // if (next_PGT.length != 0 && next_PGT.attr("class").indexOf("disabled") == -1) { // 判断下一页
-                    //     next_PGT.click();
-                    //     i = -1;
-                    // } else {
+                    if (next_PGT.length != 0 && next_PGT.attr("class").indexOf("disabled") == -1) { // 判断下一页
+                        next_PGT.click();
+                        i = -1;
+                    } else {
                         clearInterval(timer);
                         writeInCover(new_table);
-                    // }
+                    }
                 })
 
             }

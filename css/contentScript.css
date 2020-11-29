@@ -54,6 +54,9 @@
 }
 
 .drawerHandle {
+    cursor: pointer;
+    align-self: center;
+    margin-left: 2px;
     position: absolute; /*这句不能少，否则动不起来*/
     animation: hurong 0.5s infinite alternate; /*keyframes名称，动画时间，循环*/
     -moz-animation: hurong 0.5s infinite alternate; /*火狐*/
@@ -78,6 +81,17 @@
     100% {
         transform: translate(0px)
     }
+}
+
+.drawer-mask {
+    height: calc(100% - 66px);
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 36px;
+    margin-right: 5px;
+    width: 290px;
+    display: none;
+    border-radius: 5px;
 }
 
 .drawer {
@@ -130,10 +144,17 @@
     /*border-bottom-right-radius: unset;*/
 }
 
+.table-Header-li {
+    cursor: pointer;
+    float: left;
+    margin-top: 5px;
+}
+
 .drawer-scrollbar {
     height: calc(100% - 35px);
     overflow: hidden;
     overflow-y: auto;
+    white-space: nowrap;
 }
 
 .drawer-scrollbar::-webkit-scrollbar { /*滚动条整体样式*/

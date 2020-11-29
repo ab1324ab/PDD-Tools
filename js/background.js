@@ -63,12 +63,10 @@ function initTableHeader(callback) {
         pageTabs: undefined,
         request: dto
     }, function (response) {
-        console.info(response);
         if (response.code == response_success) {
             localStorage.setItem("init_table_header", JSON.stringify(response.content));
             callback(JSON.stringify(response.content));
         }
-        //localStorage.setItem("init_table_header", JSON.stringify(response));
     });
 }
 
