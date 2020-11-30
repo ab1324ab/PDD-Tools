@@ -134,7 +134,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         var new_tr = $("#new_table").find("tr");
                         for (let j = 0; j < new_tr.length; j++) {
                             var order_no = $(new_tr[j]).find("td:nth-child(1)").text();
-                            var new_td = $("<td></td>");
+                            var new_td = $("<td class='waterArmy_signIndex'></td>");
                             new_td.css("border", "1px solid #d4d5d5");
                             new_td.css("padding", "10px");
                             new_td.text(" ");
@@ -145,26 +145,32 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                                     break;
                                 }
                             }
-                            $(new_tr[j]).find("td:nth-child(" + signIndex + ")").after(new_td);
+                            if($(new_tr[j]).find(".waterArmy_signIndex").length != 0){
+                                $(new_tr[j]).find(".waterArmy_signIndex").text(new_td.text());
+                            }else{
+                                $(new_tr[j]).find("td:nth-child(" + signIndex + ")").after(new_td);
+                            }
                         }
                         var differArr = brushOrderArr.concat(isExistArr).filter(function (v, i, arr) {
                             return arr.indexOf(v) === arr.lastIndexOf(v);
                         });
-                        var new_diff = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>没有匹配订单：</div></div>");
+                        $(".new_error").empty();
+                        var new_diff = $("<div class='new_error'><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>没有匹配订单：</div></div>");
                         new_diff.css("color", "green");
                         var new_diff_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
                         new_diff.append(new_diff_content);
                         for (var i = 0; i < differArr.length; i++) {
-                            var div = $("<div style='float: left;'></div>");
+                            var div = $("<div style='display: inline-block;'></div>");
                             div.html(differArr[i].split("|")[1] + "&nbsp;&nbsp;&nbsp;");
                             new_diff_content.append(div);
                         }
-                        var new_error = $("<div><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>无法识别图片：</div></div>");
+                        $(".new_diff").empty();
+                        var new_error = $("<div class='new_diff'><div style='color: red;font-weight: 600;text-align: left;margin-top: 5px;'>无法识别图片：</div></div>");
                         new_error.css("color", "green");
                         var new_error_content = $("<div style='margin-top: 5px;margin-left: 25px;'></div>");
                         new_error.append(new_error_content);
                         for (var i = 0; i < errorOrderArr.length; i++) {
-                            var div = $("<div style='float: left;'></div>");
+                            var div = $("<div style='display: inline-block;'></div>");
                             div.html(errorOrderArr[i] + "&nbsp;&nbsp;&nbsp;");
                             new_error_content.append(div);
                         }
