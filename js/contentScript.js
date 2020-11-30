@@ -116,10 +116,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (request.request.code == response_success) {
             sendMessageToBackground({cmd: "gain_table_header", code: response_success}, function (response) {
                 if (response.code == response_success) {
-                    var signIndex = 0;
+                    var signIndex = 1;
                     if (response.content != undefined) {
                         response.content.forEach((v, i) => {
-                            if (v.text == '订单标识') {
+                            if (v.text == '订单标识（水军识别专用）') {
                                 signIndex = i;
                                 return;
                             }
