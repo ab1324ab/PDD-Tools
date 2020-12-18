@@ -53,6 +53,41 @@
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
 }
 
+.btn-light {
+    color: #212529;
+    background-color: #f8f9fa;
+    border-color: #f8f9fa
+}
+
+.btn-light:hover {
+    color: #212529;
+    background-color: #e2e6ea;
+    border-color: #dae0e5
+}
+
+.btn-light.focus, .btn-light:focus {
+    color: #212529;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+    box-shadow: 0 0 0 .2rem rgba(216, 217, 219, .5)
+}
+
+.btn-light.disabled, .btn-light:disabled {
+    color: #212529;
+    background-color: #f8f9fa;
+    border-color: #f8f9fa
+}
+
+.btn-light:not(:disabled):not(.disabled).active, .btn-light:not(:disabled):not(.disabled):active, .show > .btn-light.dropdown-toggle {
+    color: #212529;
+    background-color: #dae0e5;
+    border-color: #d3d9df
+}
+
+.btn-light:not(:disabled):not(.disabled).active:focus, .btn-light:not(:disabled):not(.disabled):active:focus, .show > .btn-light.dropdown-toggle:focus {
+    box-shadow: 0 0 0 .2rem rgba(216, 217, 219, .5)
+}
+
 .drawerHandle {
     cursor: pointer;
     align-self: center;
@@ -84,37 +119,32 @@
 }
 
 .drawer-mask {
-    height: calc(100% - 66px);
+    height: calc(100% - 77px);
     background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
-    top: 36px;
+    top: 55px;
     margin-right: 5px;
-    width: 290px;
+    width: 245px;
     display: none;
     border-radius: 5px;
+    /*opacity: 0.8;*/
 }
 
 .drawer {
-    /*height: calc(100% - 66px);*/
     height: 100%;
     position: absolute;
     display: none;
     right: 0px;
-    /*top: 36px;*/
     width: 0px;
-    /*opacity: 1;*/
     z-index: 1;
-    /*float: right;*/
     background-color: white;
-    border-radius: 5px;
-
-    /*border: 1px solid red;*/
-    /*width: 290px !important;*/
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 
 .drawer-door {
     height: 100%;
-    width: 20px;
+    width: 16px;
     background-color: white;
     float: right;
     border-top-right-radius: 5px;
