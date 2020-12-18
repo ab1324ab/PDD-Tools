@@ -145,9 +145,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                                     break;
                                 }
                             }
-                            if($(new_tr[j]).find(".waterArmy_signIndex").length != 0){
+                            if ($(new_tr[j]).find(".waterArmy_signIndex").length != 0) {
                                 $(new_tr[j]).find(".waterArmy_signIndex").text(new_td.text());
-                            }else{
+                            } else {
                                 $(new_tr[j]).find("td:nth-child(" + signIndex + ")").after(new_td);
                             }
                         }
@@ -241,6 +241,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
 
         }
+    } else if (request.cmd == "video_image_batch_download") {
+        if (request.request.code == response_success) {
+
+        }
+        sendResponse(response_dto);
     }
 });
 
