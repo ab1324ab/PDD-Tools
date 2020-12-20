@@ -1,4 +1,4 @@
-.btn {
+.btn-plugin {
     padding: .25rem .5rem;
     font-size: .875rem;
     line-height: 1.5;
@@ -21,70 +21,70 @@
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.btn-outline-primary {
+.btn-plugin-outline-primary {
     color: #007bff;
     border-color: #007bff;
 }
 
-.btn-outline-primary:hover {
+.btn-plugin-outline-primary:hover {
     color: #fff;
     background-color: #007bff;
     border-color: #007bff;
 }
 
-.btn-outline-primary:focus, .btn-outline-primary.focus {
+.btn-plugin-outline-primary:focus, .btn-plugin-outline-primary.focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
 }
 
-.btn-outline-primary.disabled, .btn-outline-primary:disabled {
+.btn-plugin-outline-primary.disabled, .btn-plugin-outline-primary:disabled {
     color: #007bff;
     background-color: transparent;
 }
 
-.btn-outline-primary:not(:disabled):not(.disabled):active, .btn-outline-primary:not(:disabled):not(.disabled).active,
-.show > .btn-outline-primary.dropdown-toggle {
+.btn-plugin-outline-primary:not(:disabled):not(.disabled):active, .btn-plugin-outline-primary:not(:disabled):not(.disabled).active,
+.show > .btn-plugin-outline-primary.dropdown-toggle {
     color: #fff;
     background-color: #007bff;
     border-color: #007bff;
 }
 
-.btn-outline-primary:not(:disabled):not(.disabled):active:focus, .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
-.show > .btn-outline-primary.dropdown-toggle:focus {
+.btn-plugin-outline-primary:not(:disabled):not(.disabled):active:focus, .btn-plugin-outline-primary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-plugin-outline-primary.dropdown-toggle:focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
 }
 
-.btn-light {
+.btn-plugin-light {
     color: #212529;
     background-color: #f8f9fa;
     border-color: #f8f9fa
 }
 
-.btn-light:hover {
+.btn-plugin-light:hover {
     color: #212529;
     background-color: #e2e6ea;
     border-color: #dae0e5
 }
 
-.btn-light.focus, .btn-light:focus {
+.btn-plugin-light.focus, .btn-plugin-light:focus {
     color: #212529;
     background-color: #e2e6ea;
     border-color: #dae0e5;
     box-shadow: 0 0 0 .2rem rgba(216, 217, 219, .5)
 }
 
-.btn-light.disabled, .btn-light:disabled {
+.btn-plugin-light.disabled, .btn-plugin-light:disabled {
     color: #212529;
     background-color: #f8f9fa;
     border-color: #f8f9fa
 }
 
-.btn-light:not(:disabled):not(.disabled).active, .btn-light:not(:disabled):not(.disabled):active, .show > .btn-light.dropdown-toggle {
+.btn-plugin-light:not(:disabled):not(.disabled).active, .btn-plugin-light:not(:disabled):not(.disabled):active, .show > .btn-plugin-light.dropdown-toggle {
     color: #212529;
     background-color: #dae0e5;
     border-color: #d3d9df
 }
 
-.btn-light:not(:disabled):not(.disabled).active:focus, .btn-light:not(:disabled):not(.disabled):active:focus, .show > .btn-light.dropdown-toggle:focus {
+.btn-plugin-light:not(:disabled):not(.disabled).active:focus, .btn-plugin-light:not(:disabled):not(.disabled):active:focus, .show > .btn-plugin-light.dropdown-toggle:focus {
     box-shadow: 0 0 0 .2rem rgba(216, 217, 219, .5)
 }
 
