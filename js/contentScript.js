@@ -362,20 +362,41 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 menuLeft.append(ul)
                 drawerBody.append(menuLeft)
                 var bodyContent = $("<div id='bodyContent' style='height: calc(100% - 11px);padding: 5px;flex-basis: 0;flex-grow: 1;min-width: 0;overflow-y: scroll;max-width: 100%;background-color: #f8f9fa;'></div>")
-                aiparser(bodyContent)
-                // var images = $("img")
-                // for (var i = 0; i < images.length; i++) {
-                //     var imgDiv = $("<div style='width: 100px;height: 100px;border: 1px solid red;margin: 5px;display: inline-flex;'></div>")
-                //     var img = $("<img src='" + images[i].src + "' height='100' width='100'>")
-                //     imgDiv.append(img)
-                //     bodyContent.append(imgDiv)
-                // }
+                //aiparser(bodyContent)
+                var images = $("img")
+                for (var i = 0; i < images.length; i++) {
+                    var imgDiv = $("<div style='border: 1px solid red;width: 100px;height: 100px;margin: 5px;display: inline-flex;position: relative;'></div>")
+                    $(imgDiv).click(function () {
+                        $(this).toggleClass("cancel-img");
+                    })
+                    var imgD = $("<img src='" + images[i].src + "' height='100' width='100'>")
+                    imgDiv.append(imgD)
+                    var img_url = images[i].src;
+                    var img = new Image();
+                    img.src = img_url;
+                    if (!img.complete) {
+                        img.onload = async function () {
+                            console.log('from:onload : width:' + img.width + ',height:' + img.height);
+                        };
+                    }
+                    var imgHeight = img.height
+                    var imgWidth = img.width
+                    var urlArr = img.src.split("/")
+                    var imgName = urlArr[urlArr.length - 1];
+                    if (imgName.split(".")[0].length > 4) {
+                        var namePrefix = imgName.split(".")[0]
+                        var sub = namePrefix.substring(2, namePrefix.length - 2)
+                        imgName = imgName.replace(sub, "...")
+                        imgName = imgName.replace("?", "")
+                    }
+                    var title = $("<div id='src" + i + "' style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + imgName + "</div><div style='padding-left: 5px'>" + imgWidth + " x " + imgHeight + "</div></div>")
+                    imgDiv.append(title)
+                    bodyContent.append(imgDiv)
+                }
                 drawerBody.append(bodyContent)
                 batchDownloadDrawer.append(drawerBody)
                 $("body").append(batchDownloadDrawer)
-                $(batchDownloadDrawer).animate({height: "450px"}, function () {
-                    //$(batchDownloadDrawer).css("height", "auto");
-                });
+                $(batchDownloadDrawer).animate({height: "450px"});
             }
         }
         sendResponse(response_dto);
@@ -497,7 +518,7 @@ function sendMessageToBackground(message, callback) {
     })
 }
 
-function aiparser(bodyContent){
+function aiparser(bodyContent) {
     // if(top != self){
     //     return;
     // }
@@ -526,12 +547,12 @@ function aiparser(bodyContent){
     //         '详情',
     //     ]
     // })
-    if(location.href.match('detail.1688.com')){
+    if (location.href.match('detail.1688.com')) {
         var itemImgs = document.querySelectorAll('#dt-tab img');
         var colorImgs = document.querySelectorAll('.obj-leading img,.table-sku img');
         var descImgs = document.querySelectorAll('.de-description-detail img');
         var mainIndex = 1;
-        itemImgs.forEach(function(img){
+        itemImgs.forEach(function (img) {
             var src = img.dataset.lazySrc || img.src
 
             var imgDiv = $("<div style='width: 100px;height: 100px;border: 1px solid red;margin: 5px;display: inline-flex;'></div>")
@@ -546,7 +567,7 @@ function aiparser(bodyContent){
             // })
         });
         var colorIndex = 1;
-        colorImgs.forEach(function(img){
+        colorImgs.forEach(function (img) {
             var src = img.dataset.lazySrc || img.src
 
             var imgDiv = $("<div style='width: 100px;height: 100px;border: 1px solid red;margin: 5px;display: inline-flex;'></div>")
@@ -561,7 +582,7 @@ function aiparser(bodyContent){
             // })
         });
         // var detailIndex = 1;
-        descImgs.forEach(function(img){
+        descImgs.forEach(function (img) {
             var src = img.dataset.lazySrc || img.src
 
             var imgDiv = $("<div style='width: 100px;height: 100px;border: 1px solid red;margin: 5px;display: inline-flex;'></div>")
@@ -629,9 +650,9 @@ function aiparser(bodyContent){
         //         });
         //     }
         // }
-    }else{
-        document.querySelectorAll('img').forEach(function(img, index){
-            new ParsedPItem(img, index, _tabInfo, function(item){
+    } else {
+        document.querySelectorAll('img').forEach(function (img, index) {
+            new ParsedPItem(img, index, _tabInfo, function (item) {
                 chrome.runtime.sendMessage({
                     cmd: 'ADD_IMG',
                     tabId: _tabInfo.id,
