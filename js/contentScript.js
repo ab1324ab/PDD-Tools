@@ -8,7 +8,7 @@ var timer_stop = null;
 var timer_container_count = null;// 图片验证码出现计时40s
 var cover_content =
     '<div style="position: fixed;top: 0px;left: 0px;z-index: 1040;width: 100vw;height: 100vh;background-color: rgba(0, 0, 0, 0.5);">' +
-    '   <div style="position: absolute;background-color: white;padding: 16px;padding-bottom: 37px;border-radius: 5px;font-size: 1rem;right: auto;top: 40%;font-weight: 300;margin: 0 auto;left: 50%;margin-left: -116px;">' +
+    '   <div style="position: absolute;background-color: white;padding: 16px;padding-bottom: 37px;border-radius: 5px;font-size: 16px;right: auto;top: 40%;font-weight: 300;margin: 0 auto;left: 50%;margin-left: -116px;">' +
     '       <div style="margin-bottom: 10px">' +
     '           <button type="button" class="btn-plugin btn-plugin-outline-primary" style="width: 200px;display: block;margin: 0 auto;" onclick="copy_cover()" >复制</button>' +
     '           <button id="cover_close" value="" style="position: absolute;right: 16px;top: 16px;" type="button" class="btn-plugin btn-plugin-outline-primary" onclick="isClose()">X</button>' +
@@ -308,7 +308,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var ul = $("<ul style='list-style-type: none;padding: 0;'></ul>")
                 // li排序
                 var sortLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;'></li>")
-                var select = $("<select style='appearance: none;-moz-appearance:none;-webkit-appearance:none;-moz-appearance:none;-webkit-appearance:none;background: url(https://inews.gtimg.com/newsapp_bt/0/5443201980/640) no-repeat scroll right center transparent;background-size: 20px;display: block;width: 100%;height: calc(1.5em + .75rem + 2px);padding: .10rem .75rem;font-weight: 400;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: .25rem;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;' ></select>")
+                var select = $("<select style='appearance: none;-moz-appearance:none;-webkit-appearance:none;-moz-appearance:none;-webkit-appearance:none;background: url(https://inews.gtimg.com/newsapp_bt/0/5443201980/640) no-repeat scroll right center transparent;background-size: 20px;display: block;width: 100%;height: 35px;padding: 2px 9px;font-weight: 400;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: 5px;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;' ></select>")
                 var option = $("<option style='font-size: 16px;' value='1'>原排序</option>")
                 select.append(option)
                 var maxOption = $("<option style='font-size: 16px;' value='1'>大图优先</option>")
@@ -362,41 +362,41 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 menuLeft.append(ul)
                 drawerBody.append(menuLeft)
                 var bodyContent = $("<div id='bodyContent' style='height: calc(100% - 11px);padding: 5px;flex-basis: 0;flex-grow: 1;min-width: 0;overflow-y: scroll;max-width: 100%;background-color: #f8f9fa;'></div>")
-                //aiparser(bodyContent)
                 var images = $("img")
-                for (var i = 0; i < images.length; i++) {
-                    var imgDiv = $("<div style='border: 1px solid red;width: 100px;height: 100px;margin: 5px;display: inline-flex;position: relative;'></div>")
-                    $(imgDiv).click(function () {
-                        $(this).toggleClass("cancel-img");
-                    })
-                    var imgD = $("<img src='" + images[i].src + "' height='100' width='100'>")
-                    imgDiv.append(imgD)
-                    var img_url = images[i].src;
-                    var img = new Image();
-                    img.src = img_url;
-                    if (!img.complete) {
-                        img.onload = async function () {
-                            console.log('from:onload : width:' + img.width + ',height:' + img.height);
-                        };
-                    }
-                    var imgHeight = img.height
-                    var imgWidth = img.width
-                    var urlArr = img.src.split("/")
-                    var imgName = urlArr[urlArr.length - 1];
-                    if (imgName.split(".")[0].length > 4) {
-                        var namePrefix = imgName.split(".")[0]
-                        var sub = namePrefix.substring(2, namePrefix.length - 2)
-                        imgName = imgName.replace(sub, "...")
-                        imgName = imgName.replace("?", "")
-                    }
-                    var title = $("<div id='src" + i + "' style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + imgName + "</div><div style='padding-left: 5px'>" + imgWidth + " x " + imgHeight + "</div></div>")
-                    imgDiv.append(title)
-                    bodyContent.append(imgDiv)
-                }
+                // for (var i = 0; i < images.length; i++) {
+                //     var imgDiv = $("<div style='border: 1px solid red;width: 100px;height: 100px;margin: 5px;display: inline-flex;position: relative;'></div>")
+                //     $(imgDiv).click(function () {
+                //         $(this).toggleClass("cancel-img");
+                //     })
+                //     var imgD = $("<img src='" + images[i].src + "' height='100' width='100'>")
+                //     imgDiv.append(imgD)
+                //     var img_url = images[i].src;
+                //     var img = new Image();
+                //     img.src = img_url;
+                //     if (!img.complete) {
+                //         img.onload = async function () {
+                //             console.log('from:onload : width:' + img.width + ',height:' + img.height);
+                //         };
+                //     }
+                //     var imgHeight = img.height
+                //     var imgWidth = img.width
+                //     var urlArr = img.src.split("/")
+                //     var imgName = urlArr[urlArr.length - 1];
+                //     if (imgName.split(".")[0].length > 4) {
+                //         var namePrefix = imgName.split(".")[0]
+                //         var sub = namePrefix.substring(2, namePrefix.length - 2)
+                //         imgName = imgName.replace(sub, "...")
+                //         imgName = imgName.replace("?", "")
+                //     }
+                //     var title = $("<div id='src" + i + "' style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + imgName + "</div><div style='padding-left: 5px'>" + imgWidth + " x " + imgHeight + "</div></div>")
+                //     imgDiv.append(title)
+                //     bodyContent.append(imgDiv)
+                // }
                 drawerBody.append(bodyContent)
                 batchDownloadDrawer.append(drawerBody)
                 $("body").append(batchDownloadDrawer)
                 $(batchDownloadDrawer).animate({height: "450px"});
+                aiparser()
             }
         }
         sendResponse(response_dto);
@@ -518,130 +518,121 @@ function sendMessageToBackground(message, callback) {
     })
 }
 
-function aiparser(bodyContent) {
-    // if(top != self){
-    //     return;
+/**
+ * 写出图片到列表
+ * @param src
+ */
+function writeImgDiv(detailImg) {
+    var imgDiv = $("<div style='border: 1px solid red;width: 100px;height: 100px;margin: 5px;display: inline-flex;position: relative;'></div>")
+    $(imgDiv).click(function () {
+        $(this).toggleClass("cancel-img");
+    })
+    var img_url = detailImg.src;
+    var imgD = $("<img src='" + img_url + "' height='100' width='100'>")
+    imgDiv.append(imgD)
+    var img = new Image();
+    img.src = img_url;
+    // if (!img.complete) {
+    img.onload = function () {
+        console.log('from:onload : width:' + img.width + ',height:' + img.height);
+        var imgHeight = img.height
+        var imgWidth = img.width
+        //detailImg.group + " : " +
+        var imgName = detailImg.alt
+        var title = $("<div id='src" + i + "' style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + imgName + "</div><div style='padding-left: 5px'>" + imgWidth + " x " + imgHeight + "</div></div>")
+        imgDiv.append(title)
+        $("#bodyContent").append(imgDiv)
+    };
     // }
-    // var index = 0;
-    // function PrefixZero(num, n) {
-    //     return (Array(n).join(0) + num).slice(-n);
-    // }
-    // function send(img){
-    //     new ParsedPItem(img, index++, _tabInfo, function(item){
-    //         if(item.width > 300){
-    //             item.ext = 'jpg';
-    //             chrome.runtime.sendMessage({
-    //                 cmd: 'ADD_IMG',
-    //                 tabId: _tabInfo.id,
-    //                 item: item,
-    //             });
-    //         }
-    //     })
-    // }
-    // chrome.runtime.sendMessage({
-    //     cmd: 'SET_GROUPS',
-    //     groups: [
-    //         '主图',
-    //         '视频',
-    //         'SKU图片',
-    //         '详情',
-    //     ]
-    // })
+
+}
+
+function aiparser() {
+    function PrefixZero(num, n) {
+        return (Array(n).join(0) + num).slice(-n);
+    }
+
+    function send(img) {
+        writeImgDiv(img)
+    }
+
     if (location.href.match('detail.1688.com')) {
         var itemImgs = document.querySelectorAll('#dt-tab img');
         var colorImgs = document.querySelectorAll('.obj-leading img,.table-sku img');
         var descImgs = document.querySelectorAll('.de-description-detail img');
         var mainIndex = 1;
         itemImgs.forEach(function (img) {
-            var src = img.dataset.lazySrc || img.src
-
-            var imgDiv = $("<div style='width: 100px;height: 100px;border: 1px solid red;margin: 5px;display: inline-flex;'></div>")
-            var imgv = $("<img alt='主图' src='" + src + "' height='100' width='100'>")
-            imgDiv.append(imgv)
-            bodyContent.append(imgDiv)
-            // send({
-            //     src: img.dataset.lazySrc || img.src,
-            //     group: '主图',
-            //     groupIndex: 0,
-            //     alt: '主图-'+PrefixZero(mainIndex++, 2),
-            // })
+            send({
+                src: img.dataset.lazySrc || img.src,
+                group: '主图',
+                groupIndex: 0,
+                alt: '主图-' + PrefixZero(mainIndex++, 2),
+            })
         });
         var colorIndex = 1;
         colorImgs.forEach(function (img) {
-            var src = img.dataset.lazySrc || img.src
-
-            var imgDiv = $("<div style='width: 100px;height: 100px;border: 1px solid red;margin: 5px;display: inline-flex;'></div>")
-            var imgv = $("<img alt='SKU图片' src='" + src + "' height='100' width='100'>")
-            imgDiv.append(imgv)
-            bodyContent.append(imgDiv)
-            // send({
-            //     src: img.src,
-            //     group: 'SKU图片',
-            //     groupIndex: 2,
-            //     alt: 'SKU-'+PrefixZero(colorIndex++, 2)+'-'+img.alt,
-            // })
+            send({
+                src: img.src,
+                group: 'SKU图片',
+                groupIndex: 2,
+                alt: 'SKU-' + PrefixZero(colorIndex++, 2) + '-' + img.alt,
+            })
         });
-        // var detailIndex = 1;
+        var detailIndex = 1;
         descImgs.forEach(function (img) {
-            var src = img.dataset.lazySrc || img.src
-
-            var imgDiv = $("<div style='width: 100px;height: 100px;border: 1px solid red;margin: 5px;display: inline-flex;'></div>")
-            var imgv = $("<img alt='详情' src='" + src + "' height='100' width='100'>")
-            imgDiv.append(imgv)
-            bodyContent.append(imgDiv)
-            // send({
-            //     src: img.src,
-            //     group: '详情',
-            //     groupIndex: 3,
-            //     alt: '详情-'+PrefixZero(detailIndex++, 2),
-            // })
+            send({
+                src: img.src,
+                group: '详情',
+                groupIndex: 3,
+                alt: '详情-' + PrefixZero(detailIndex++, 2),
+            })
         });
-        // if(descImgs.length == 0){
-        //     var tfsUrl = $('#desc-lazyload-container').attr('data-tfs-url');
-        //     if(tfsUrl){
-        //         if(!tfsUrl.match('desc.alicdn.com')){
-        //             tfsUrl+'?_='+Date.now();
-        //         }
-        //         chrome.runtime.sendMessage({
-        //             cmd: 'NET',
-        //             settings:{
-        //                 url: tfsUrl,
-        //             }
-        //         }, function(res){
-        //             if(res.status == 'ok'){
-        //                 var result = res.data.match(/https:\/\/cbu01.alicdn.com\/img[^ ]*?\.jpg/g);
-        //                 if(result){
-        //                     result.forEach(function(img){
-        //                         send({
-        //                             src: img,
-        //                             group: '详情',
-        //                             groupIndex: 3,
-        //                             alt: '详情-'+PrefixZero(detailIndex++, 2),
-        //                         });
-        //                     });
-        //                 }
-        //             }
-        //         });
-        //     }
-        // }
-        // if(location.href.match('detail.1688.com/pic')){
-        //     document.querySelectorAll('#dt-bp-tab-nav li[data-img]').forEach(function(item){
-        //         send({
-        //             src: item.dataset.img
-        //         });
-        //     });
-        // }
+        if (descImgs.length == 0) {
+            var tfsUrl = $('#desc-lazyload-container').attr('data-tfs-url');
+            if (tfsUrl) {
+                if (!tfsUrl.match('desc.alicdn.com')) {
+                    tfsUrl + '?_=' + Date.now();
+                }
+                $.ajax({
+                    url: tfsUrl,
+                    data: {},
+                    async: false,
+                    type: 'get',
+                    success: function (data) {
+                        console.info(data)
+                        var result = data.match(/https:\/\/cbu01.alicdn.com\/img[^ ]*?\.jpg/g);
+                        if (result) {
+                            result.forEach(function (img) {
+                                send({
+                                    src: img,
+                                    group: '详情',
+                                    groupIndex: 3,
+                                    alt: '详情-' + PrefixZero(detailIndex++, 2),
+                                });
+                            });
+                        }
+                    }
+                })
+            }
+        }
+        if (location.href.match('detail.1688.com/pic')) {
+            document.querySelectorAll('#dt-bp-tab-nav li[data-img]').forEach(function (item) {
+                send({
+                    src: item.dataset.img
+                });
+            });
+        }
         // var detailGalery = document.querySelector('.mod-detail-version2018-gallery, .mod-detail-gallery');
         // var detailGaleryConfig;
-        // if(detailGalery){
+        // if (detailGalery) {
         //     detailGaleryConfig = JSON.parse(detailGalery.dataset.modConfig);
-        //     if(detailGaleryConfig.userId && detailGaleryConfig.mainVideoId){
-        //         var videoUrl = 'https://cloud.video.taobao.com/play/u/'+detailGaleryConfig.userId+'/p/1/e/6/t/1/'+detailGaleryConfig.mainVideoId+'.mp4';
+        //     if (detailGaleryConfig.userId && detailGaleryConfig.mainVideoId) {
+        //         var videoUrl = 'https://cloud.video.taobao.com/play/u/' + detailGaleryConfig.userId + '/p/1/e/6/t/1/' + detailGaleryConfig.mainVideoId + '.mp4';
         //         new VItem({
         //             src: videoUrl,
         //             group: '视频',
         //             groupIndex: 1,
-        //         }, index++, _tabInfo, function(item){
+        //         }, index++, _tabInfo, function (item) {
         //             chrome.runtime.sendMessage({
         //                 cmd: 'ADD_VIDEO',
         //                 tabId: _tabInfo.id,
@@ -662,3 +653,5 @@ function aiparser(bodyContent) {
         });
     }
 }
+
+
