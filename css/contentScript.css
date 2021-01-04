@@ -206,4 +206,5 @@
 
 .cancel-img {
     border: 1px solid white !important;
+    opacity: 0.5;
 }

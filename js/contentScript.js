@@ -6,6 +6,7 @@ var response_dto = {code: response_success, source: requst_source};
 var timer = null;
 var timer_stop = null;
 var timer_container_count = null;// 图片验证码出现计时40s
+
 var cover_content =
     '<div style="position: fixed;top: 0px;left: 0px;z-index: 1040;width: 100vw;height: 100vh;background-color: rgba(0, 0, 0, 0.5);">' +
     '   <div style="position: absolute;background-color: white;padding: 16px;padding-bottom: 37px;border-radius: 5px;font-size: 16px;right: auto;top: 40%;font-weight: 300;margin: 0 auto;left: 50%;margin-left: -116px;">' +
@@ -245,9 +246,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             var batchDownloadDrawer = $("#batchDownloadDrawer")
             var clientHeight = document.documentElement.clientHeight
             if (batchDownloadDrawer.length <= 0) {
+                var parame = {};
                 batchDownloadDrawer = $("<div id='batchDownloadDrawer' style='background-color: white;z-index: 9999999999;position: fixed;bottom: 0;width: 100%;height: 0px;border-top-color: #dae0e5;border-top-style: solid;border-top-width: 1px;'></div>")
                 var title = $("<div style='cursor: n-resize;padding: 5px 20px;display: flex;flex-wrap: wrap;background-color: #f4f4f5;border-bottom-color: #dae0e5;border-bottom-style: solid;border-bottom-width: 1px;'></div>")
-                var title_text = $("<div style='flex-basis: 0;flex-grow: 1;min-width: 0;max-width: 100%;'>修改</div>")
+                var title_text = $("<div style='flex-basis: 0;flex-grow: 1;min-width: 0;max-width: 100%;'>图片下载</div>")
                 title.append(title_text)
                 var operation = $("<div style='flex-basis: 0;flex-grow: 1;min-width: 0;max-width: 100%;text-align: right;'></div>")
                 var minButt = $("<a style='cursor:default;border: 1px solid #ced4da;padding: 0 5px;height: 18px;' class='btn-plugin btn-plugin-light'></a>")
@@ -261,7 +263,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var zoomIco = $("<svg style='width: 15px;vertical-align: unset;' xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\" class=\"bi bi-arrow-bar-up\" viewBox=\"0 0 16 16\" id=\"arrow-bar-up\"><path fill-rule=\"evenodd\" d=\"M8 10a.5.5 0 00.5-.5V3.707l2.146 2.147a.5.5 0 00.708-.708l-3-3a.5.5 0 00-.708 0l-3 3a.5.5 0 10.708.708L7.5 3.707V9.5a.5.5 0 00.5.5zm-7 2.5a.5.5 0 01.5-.5h13a.5.5 0 010 1h-13a.5.5 0 01-.5-.5z\"></path></svg>");
                 zoomButt.append(zoomIco)
                 zoomButt.click(function (e) {
-                    // $(batchDownloadDrawer).css("height", clientHeight)
                     $(batchDownloadDrawer).animate({top: 0, height: clientHeight}, function () {
                         $(batchDownloadDrawer).css("height", "auto")
                     })
@@ -308,12 +309,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var ul = $("<ul style='list-style-type: none;padding: 0;'></ul>")
                 // li排序
                 var sortLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;'></li>")
-                var select = $("<select style='appearance: none;-moz-appearance:none;-webkit-appearance:none;-moz-appearance:none;-webkit-appearance:none;background: url(https://inews.gtimg.com/newsapp_bt/0/5443201980/640) no-repeat scroll right center transparent;background-size: 20px;display: block;width: 100%;height: 35px;padding: 2px 9px;font-weight: 400;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: 5px;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;' ></select>")
-                var option = $("<option style='font-size: 16px;' value='1'>原排序</option>")
+                var select = $("<select id='sort_select' style='appearance: none;-moz-appearance:none;-webkit-appearance:none;-moz-appearance:none;-webkit-appearance:none;background: url(https://inews.gtimg.com/newsapp_bt/0/5443201980/640) no-repeat scroll right center transparent;background-size: 20px;display: block;width: 100%;height: 35px;padding: 2px 9px;font-weight: 400;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: 5px;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;' ></select>")
+                var option = $("<option style='font-size: 16px;' value='0'>原排序</option>")
                 select.append(option)
                 var maxOption = $("<option style='font-size: 16px;' value='1'>大图优先</option>")
                 select.append(maxOption)
-                var minOption = $("<option style='font-size: 16px;' value='1'>小图优先</option>")
+                var minOption = $("<option style='font-size: 16px;' value='2'>小图优先</option>")
+                $(select).change(function () {
+                    parame.sort = this.value;
+                    filterDetailImg(parame);
+                });
                 select.append(minOption)
                 sortLi.append(select)
                 ul.append(sortLi)
@@ -323,22 +328,34 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var isvg = $("<svg xmlns='http://www.w3.org/2000/svg' fill='currentColor' class='bi bi-ui-checks-grid' viewBox='0 0 16 16' id='ui-checks-grid' style='width: 15px;vertical-align: middle;margin-right: 5px;'><path fill-rule='evenodd' d='M2 10a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1v-3a1 1 0 00-1-1H2zm9-9a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V2a1 1 0 00-1-1h-3zm0 9a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1v-3a1 1 0 00-1-1h-3zm0-10a2 2 0 00-2 2v3a2 2 0 002 2h3a2 2 0 002-2V2a2 2 0 00-2-2h-3zM2 9a2 2 0 00-2 2v3a2 2 0 002 2h3a2 2 0 002-2v-3a2 2 0 00-2-2H2zm7 2a2 2 0 012-2h3a2 2 0 012 2v3a2 2 0 01-2 2h-3a2 2 0 01-2-2v-3zM0 2a2 2 0 012-2h3a2 2 0 012 2v3a2 2 0 01-2 2H2a2 2 0 01-2-2V2zm5.354.854l-2 2a.5.5 0 01-.708 0l-1-1a.5.5 0 11.708-.708L3 3.793l1.646-1.647a.5.5 0 11.708.708z'></path></svg>")
                 button.append(isvg)
                 var spanText = $("<span style='display: inline-block;vertical-align: middle;'>视图</span>")
+                button.click(function () {
+                    parame.view = parame.view == undefined ? true : !parame.view;
+                    filterDetailImg(parame);
+                })
                 button.append(spanText)
                 viewLi.append(button)
                 ul.append(viewLi)
                 // 高度
                 var heightLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'></li>")
-                var height = $("<div style='width: 100%;max-width: 40px;line-height: 2;'>高度</div><input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='高度'/>")
+                var height = $("<div style='width: 100%;max-width: 40px;line-height: 2;'>高度</div>")//<input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='高度'/>
+                var height_slider = $("<div id='height_slider'></div>")
                 heightLi.append(height)
+                heightLi.append(height_slider)
                 ul.append(heightLi)
                 // 宽度
                 var widthtLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'></li>")
-                var width = $("<div style='width: 100%;max-width: 40px;line-height: 2;'>宽度</div><input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='宽度'/>")
+                var width = $("<div style='width: 100%;max-width: 40px;line-height: 2;'>宽度</div>")//<input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='宽度'/>
+                var width_slider = $("<div id='width_slider'></div>")
                 widthtLi.append(width)
+                widthtLi.append(width_slider)
                 ul.append(widthtLi)
                 // 名称
-                var filterLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'></li>")
-                var filter = $("<div style='width: 100%;max-width: 40px;line-height: 2;'>名称</div><input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='输入过滤名称'/>")
+                var filterLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'><div style='width: 100%;max-width: 40px;line-height: 2;'>名称</div></li>")
+                var filter = $("<input type='text' id='filter_text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='输入过滤名称'/>")
+                filter.on("input propertychange", function () {
+                    parame.name = this.value;
+                    filterDetailImg(parame);
+                })
                 filterLi.append(filter)
                 ul.append(filterLi)
                 // 重置
@@ -347,56 +364,70 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var isvg = $("<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\" class=\"bi bi-bootstrap-reboot\" viewBox=\"0 0 16 16\" id=\"bootstrap-reboot\" style='width: 15px;vertical-align: middle;margin-right: 5px;' ><path fill-rule=\"evenodd\" d=\"M1.161 8a6.84 6.84 0 106.842-6.84.58.58 0 010-1.16 8 8 0 11-6.556 3.412l-.663-.577a.58.58 0 01.227-.997l2.52-.69a.58.58 0 01.728.633l-.332 2.592a.58.58 0 01-.956.364l-.643-.56A6.812 6.812 0 001.16 8zm5.48-.079V5.277h1.57c.881 0 1.416.499 1.416 1.32 0 .84-.504 1.324-1.386 1.324h-1.6zm0 3.75V8.843h1.57l1.498 2.828h1.314L9.377 8.665c.897-.3 1.427-1.106 1.427-2.1 0-1.37-.943-2.246-2.456-2.246H5.5v7.352h1.141z\"></path></svg>")
                 reset.append(isvg)
                 var spanText = $("<span style='display: inline-block;vertical-align: middle;'>重置</span>")
+                reset.click(function () {
+                    parame = {sort: "0"};
+                    $("#filter_text").val("");
+                    $("#sort_select").val("0");
+                    $("#width_slider").jRange('updateRange', '0,' + max_image_width + '', '0,' + max_image_width + '');
+                    $("#height_slider").jRange('updateRange', '0,' + max_image_height + '', '0,' + max_image_height + '');
+                    filterDetailImg(parame);
+                })
                 reset.append(spanText)
                 resetLi.append(reset)
                 ul.append(resetLi)
                 // 下载
-                var resetLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;'></li>")
-                var reset = $("<button style='width: 100%;' class='btn-plugin btn-plugin-outline-primary'></button>")
-                var isvg = $("<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\" class=\"bi bi-cloud-download\" viewBox=\"0 0 16 16\" id=\"cloud-download\" style='width: 15px;vertical-align: middle;margin-right: 5px;'><path fill-rule=\"evenodd\" d=\"M4.406 1.342A5.53 5.53 0 018 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 010-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 00-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 010 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z\"></path><path fill-rule=\"evenodd\" d=\"M7.646 15.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 14.293V5.5a.5.5 0 00-1 0v8.793l-2.146-2.147a.5.5 0 00-.708.708l3 3z\"></path></svg>")
-                reset.append(isvg)
-                var spanText = $("<span style='display: inline-block;vertical-align: middle;'>下载</span>")
-                reset.append(spanText)
-                resetLi.append(reset)
-                ul.append(resetLi)
+                var downloadLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;'></li>")
+                var download = $("<button style='width: 100%;' class='btn-plugin btn-plugin-outline-primary'></button>")
+                var isvgDownload = $("<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"currentColor\" class=\"bi bi-cloud-download\" viewBox=\"0 0 16 16\" id=\"cloud-download\" style='width: 15px;vertical-align: middle;margin-right: 5px;'><path fill-rule=\"evenodd\" d=\"M4.406 1.342A5.53 5.53 0 018 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 010-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 00-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 010 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z\"></path><path fill-rule=\"evenodd\" d=\"M7.646 15.854a.5.5 0 00.708 0l3-3a.5.5 0 00-.708-.708L8.5 14.293V5.5a.5.5 0 00-1 0v8.793l-2.146-2.147a.5.5 0 00-.708.708l3 3z\"></path></svg>")
+                download.append(isvgDownload)
+                var spanTextDownload = $("<span style='display: inline-block;vertical-align: middle;'>下载</span>")
+                download.click(function () {
+                    var imgDiv = $("#bodyContent").find("div[id^='src_'][class!='cancel-img']").find("img")
+                    packageImages(imgDiv)
+                    console.info(imgDiv)
+                })
+                download.append(spanTextDownload)
+                downloadLi.append(download)
+                ul.append(downloadLi)
                 menuLeft.append(ul)
                 drawerBody.append(menuLeft)
                 var bodyContent = $("<div id='bodyContent' style='height: calc(100% - 11px);padding: 5px;flex-basis: 0;flex-grow: 1;min-width: 0;overflow-y: scroll;max-width: 100%;background-color: #f8f9fa;'></div>")
-                var images = $("img")
-                // for (var i = 0; i < images.length; i++) {
-                //     var imgDiv = $("<div style='border: 1px solid red;width: 100px;height: 100px;margin: 5px;display: inline-flex;position: relative;'></div>")
-                //     $(imgDiv).click(function () {
-                //         $(this).toggleClass("cancel-img");
-                //     })
-                //     var imgD = $("<img src='" + images[i].src + "' height='100' width='100'>")
-                //     imgDiv.append(imgD)
-                //     var img_url = images[i].src;
-                //     var img = new Image();
-                //     img.src = img_url;
-                //     if (!img.complete) {
-                //         img.onload = async function () {
-                //             console.log('from:onload : width:' + img.width + ',height:' + img.height);
-                //         };
-                //     }
-                //     var imgHeight = img.height
-                //     var imgWidth = img.width
-                //     var urlArr = img.src.split("/")
-                //     var imgName = urlArr[urlArr.length - 1];
-                //     if (imgName.split(".")[0].length > 4) {
-                //         var namePrefix = imgName.split(".")[0]
-                //         var sub = namePrefix.substring(2, namePrefix.length - 2)
-                //         imgName = imgName.replace(sub, "...")
-                //         imgName = imgName.replace("?", "")
-                //     }
-                //     var title = $("<div id='src" + i + "' style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + imgName + "</div><div style='padding-left: 5px'>" + imgWidth + " x " + imgHeight + "</div></div>")
-                //     imgDiv.append(title)
-                //     bodyContent.append(imgDiv)
-                // }
                 drawerBody.append(bodyContent)
                 batchDownloadDrawer.append(drawerBody)
                 $("body").append(batchDownloadDrawer)
                 $(batchDownloadDrawer).animate({height: "450px"});
                 aiparser()
+                $("#width_slider").jRange({
+                    from: 0,   				//滑块范围的初始值
+                    to: 10000,    				//滑块范围的终止值
+                    step: 1,   				//设置步长
+                    format: '%s',  			//数值格式
+                    width: 168, 			//进度条的宽度
+                    showLabels: true,  	//是否显示滑动条下方的尺寸标签
+                    showScale: false,  		//是否显示滑块上方的数值标签
+                    isRange: true,     		//是否为选取范围
+                    theme: "theme-blue",
+                    onstatechange: function (e) {    //滑块范围改变时触发的方法
+                        parame.width = e;
+                        filterDetailImg(parame);
+                    }
+                });
+                $("#height_slider").jRange({
+                    from: 0,   				//滑块范围的初始值
+                    to: 10000,    				//滑块范围的终止值
+                    step: 1,   				//设置步长
+                    format: '%s',  			//数值格式
+                    width: 168, 			//进度条的宽度
+                    showLabels: true,  	//是否显示滑动条下方的尺寸标签
+                    showScale: false,  		//是否显示滑块上方的数值标签
+                    isRange: true,     		//是否为选取范围
+                    theme: "theme-blue",
+                    onstatechange: function (e) {    //滑块范围改变时触发的方法
+                        parame.height = e;
+                        filterDetailImg(parame);
+                    }
+                });
+
             }
         }
         sendResponse(response_dto);
@@ -518,33 +549,192 @@ function sendMessageToBackground(message, callback) {
     })
 }
 
+// 筛选条件
+let parame = {};
+// 图片组
+var imageData = new Array();
+var max_image_width = 0;
+var max_image_height = 0;
+
+function filterDetailImg(parame) {
+    var filterData = imageData;
+    if (parame.sort) {
+        if (parame.sort == "0") {
+            filterData.sort(function (a, b) {
+                if (a.index > b.index) {//如果id相同，按照age的降序
+                    return 1
+                } else {
+                    return -1
+                }
+            })
+        } else if (parame.sort == "1") {
+            filterData.sort(function (a, b) {
+                if ((a.width * a.height) > (b.width * b.height)) {//如果id相同，按照age的降序
+                    return -1
+                } else {
+                    return 1
+                }
+            })
+        } else if (parame.sort == "2") {
+            filterData.sort(function (a, b) {
+                if ((a.width * a.height) > (b.width * b.height)) {//如果id相同，按照age的降序
+                    return 1
+                } else {
+                    return -1
+                }
+            })
+        }
+    }
+    $("#bodyContent").empty();
+    for (let j = 0; j < filterData.length; j++) {
+        var value = filterData[j]
+        var imgHeight = 100
+        var imgWidth = 100
+        if (parame.view) {
+            imgHeight = value.height;
+            imgWidth = value.width;
+        }
+        if (parame.name != undefined && value.alt.indexOf(parame.name) < 0) {
+            continue;
+        }
+        if (parame.width != undefined) {
+            var width = parame.width.split(",")
+            var min = parseInt(width[0])
+            var max = parseInt(width[1])
+            if (value.width < min || value.width > max) {
+                continue;
+            }
+        }
+        if (parame.height != undefined) {
+            var height = parame.height.split(",")
+            var min = parseInt(height[0])
+            var max = parseInt(height[1])
+            if (value.height < min || value.height > max) {
+                continue;
+            }
+        }
+        var imgDiv = $("<div id='src_" + j + "' style='border: 1px solid red;width: " + imgWidth + "px;height: " + imgHeight + "px;margin: 5px;display: inline-flex;position: relative;'></div>")
+        $(imgDiv).click(function () {
+            $(this).toggleClass("cancel-img");
+        })
+        var imgD = $("<img src='" + value.src + "' name='" + value.alt + "' height='" + imgHeight + "' width='" + imgWidth + "'>")
+        imgDiv.append(imgD)
+        var title = $("<div style='background: rgba(0, 0, 0, 0.5);color: white;width: " + imgWidth + "px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + value.alt + "</div><div style='padding-left: 5px'>" + value.width + " x " + value.height + "</div></div>")
+        imgDiv.append(title)
+        $("#bodyContent").append(imgDiv)
+    }
+}
+
 /**
  * 写出图片到列表
  * @param src
  */
 function writeImgDiv(detailImg) {
-    var imgDiv = $("<div style='border: 1px solid red;width: 100px;height: 100px;margin: 5px;display: inline-flex;position: relative;'></div>")
-    $(imgDiv).click(function () {
-        $(this).toggleClass("cancel-img");
-    })
+
     var img_url = detailImg.src;
-    var imgD = $("<img src='" + img_url + "' height='100' width='100'>")
-    imgDiv.append(imgD)
     var img = new Image();
     img.src = img_url;
-    // if (!img.complete) {
     img.onload = function () {
         console.log('from:onload : width:' + img.width + ',height:' + img.height);
-        var imgHeight = img.height
-        var imgWidth = img.width
-        //detailImg.group + " : " +
-        var imgName = detailImg.alt
-        var title = $("<div id='src" + i + "' style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + imgName + "</div><div style='padding-left: 5px'>" + imgWidth + " x " + imgHeight + "</div></div>")
+        var imgHeight = 100
+        var imgWidth = 100
+        var imgData = {
+            src: img.src,
+            alt: detailImg.alt,
+            height: img.height,
+            width: img.width,
+            group: detailImg.group,
+            groupIndex: detailImg.groupIndex,
+            index: detailImg.index == undefined ? $("#bodyContent").find("div[id^='src_']").length + 1 : detailImg.index,
+        }
+        if (max_image_width < img.width) {
+            max_image_width = img.width;
+            $("#width_slider").jRange('updateRange', '0,' + max_image_width + '', '0,' + max_image_width + '');
+        }
+        if (max_image_height < img.height) {
+            max_image_height = img.height;
+            $("#height_slider").jRange('updateRange', '0,' + max_image_height + '', '0,' + max_image_height + '');
+        }
+        // $("#width_slider").jRange('updateRange', '0,100', 10);
+        imageData.push(imgData);
+        var imgDiv = $("<div id='src_" + i + "' style='border: 1px solid red;width: " + imgWidth + "px;height: " + imgHeight + "px;margin: 5px;display: inline-flex;position: relative;'></div>")
+        $(imgDiv).click(function () {
+            $(this).toggleClass("cancel-img");
+        })
+        var imgD = $("<img src='" + img_url + "' name='" + detailImg.alt + "' height='" + imgHeight + "' width='" + imgWidth + "'>")
+        imgDiv.append(imgD)
+        // data='" + JSON.stringify(imgData) + "'
+        var title = $("<div style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + detailImg.alt + "</div><div style='padding-left: 5px'>" + img.width + " x " + img.height + "</div></div>")
         imgDiv.append(title)
         $("#bodyContent").append(imgDiv)
     };
-    // }
+}
 
+function packageImages(imgs) {
+    var cover_img = $("<div style='position: absolute;width: 100%;height: 100%;background-color: #efefef;z-index: 1;opacity: 0.8;top: 36px;'></div>")
+    var status_div = $("<div id='status_div' style='font-size: 35px;font-weight: 600;width: 400px;margin-top: 20px;text-align: center;color: black;'>处理中。。。。。</div>")
+    cover_img.append(status_div)
+    $("#bodyContent").append(cover_img)
+    //var imgs = $('img');
+    var imgsSrc = [];
+    var imgBase64 = [];
+    var imageSuffix = [];//图片后缀
+    var zip = new JSZip();
+    //zip.file("readme.txt", "案件详情资料\n");
+    var img = zip.folder("images");
+    for (var i = 0; i < imgs.length; i++) {
+        var src = imgs[i].getAttribute("src");
+        var suffix = src.substring(src.lastIndexOf("."));
+        imageSuffix.push(suffix);
+        getBase64(imgs[i].getAttribute("src")).then(function (base64) {
+            imgBase64.push(base64.substring(22));
+        }, function (err) {
+            console.log(err);//打印异常信息
+        });
+    }
+
+    function timer() {
+        setTimeout(function () {
+            if (imgs.length == imgBase64.length) {
+                for (var i = 0; i < imgs.length; i++) {
+                    img.file(imgs[i].name + imageSuffix[i], imgBase64[i], {base64: true});
+                }
+                zip.generateAsync({type: "blob"}).then(function (content) {
+                    saveAs(content, "images.zip");
+                });
+                $('#status_div').text('正在保存。。。。。');
+            } else {
+                $('#status_div').text('已完成：' + imgBase64.length + '/' + imgs.length);
+                timer();
+            }
+        }, 100);
+    }
+
+    timer();
+}
+
+//传入图片路径，返回base64
+function getBase64(img) {
+    function getBase64Image(img, width, height) {//width、height调用时传入具体像素值，控制大小 ,不传则默认图像大小
+        var canvas = document.createElement("canvas");
+        canvas.width = width ? width : img.width;
+        canvas.height = height ? height : img.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dataURL = canvas.toDataURL();
+        return dataURL;
+    }
+
+    var image = new Image();
+    image.crossOrigin = 'Anonymous';
+    image.src = img;
+    var deferred = $.Deferred();
+    if (img) {
+        image.onload = function () {
+            deferred.resolve(getBase64Image(image));//将base64传给done上传处理
+        }
+        return deferred.promise();//问题要让onload完成后再return sessionStorage['imgTest']
+    }
 }
 
 function aiparser() {
@@ -553,7 +743,7 @@ function aiparser() {
     }
 
     function send(img) {
-        writeImgDiv(img)
+        writeImgDiv(img, {})
     }
 
     if (location.href.match('detail.1688.com')) {
