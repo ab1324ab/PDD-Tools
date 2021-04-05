@@ -831,6 +831,28 @@ function aiparser() {
         //         });
         //     }
         // }
+    }
+    else if(location.href.match('http://mobile.yangkeduo.com/')){//pdd-lazy-image loaded
+        var itemImgs = $(".goods-container-v2").children("div:first").find("img")
+        var mainIndex = 1;
+        itemImgs.each(function() {
+            send({
+                src: $(this).attr("src") || $(this).attr("data-src"),
+                group: '主图',
+                groupIndex: 0,
+                alt: '主图-' + PrefixZero(mainIndex++, 2),
+            })
+        });
+        var descImgs = $("img[data-src]").filter("img[class='pdd-lazy-image'],img[class='pdd-lazy-image loaded']")
+        var detailIndex = 1;
+        descImgs.each(function() {
+            send({
+                src: $(this).attr("data-src"),
+                group: '详情',
+                groupIndex: 3,
+                alt: '详情-' + PrefixZero(detailIndex++, 2),
+            })
+        })
     } else {
         document.querySelectorAll('img').forEach(function (img, index) {
             new ParsedPItem(img, index, _tabInfo, function (item) {
