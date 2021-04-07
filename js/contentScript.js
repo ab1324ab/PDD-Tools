@@ -854,13 +854,13 @@ function aiparser() {
             })
         })
     } else {
+        var detailIndex = 1;
         document.querySelectorAll('img').forEach(function (img, index) {
-            new ParsedPItem(img, index, _tabInfo, function (item) {
-                chrome.runtime.sendMessage({
-                    cmd: 'ADD_IMG',
-                    tabId: _tabInfo.id,
-                    item: item,
-                });
+            send({
+                src: $(img).attr("src"),
+                group: '全图',
+                groupIndex: 0,
+                alt: '图片-' + PrefixZero(detailIndex++, 2),
             })
         });
     }
