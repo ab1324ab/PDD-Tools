@@ -751,7 +751,6 @@ function aiparser() {
         var result = eval(response)
         dto.type = result;
         sendMessageToBackground({cmd: "gain_static_source_javascript_plugin", code: response_success, requestDto: dto }, function (response) {
-            console.info(response);
             eval(response);
         })
     })
