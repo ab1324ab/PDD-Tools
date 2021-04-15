@@ -143,7 +143,11 @@ function getStorageKey() {
 
 // 接受来自前端的信息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.cmd == 'send_element_background') {
+    if (request.cmd == 'gain_static_resource_address') {
+        sendResponse(evalJSX("/js/plugin.distribution"));
+    } else if (request.cmd == 'gain_static_source_javascript_plugin') {
+        sendResponse(evalJSX("/js/plugin/" + request.requestDto.type));
+    } else if (request.cmd == 'send_element_background') {
         // 发送数据到工具
         dto.cmd = "service_bind_element";
         dto.element = request.dataDto.element;
@@ -154,7 +158,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         dto.type = request.dataDto.type;
         var dtostr = JSON.stringify(dto);
         socket.send(dtostr);
-    }else if(request.cmd == 'gain_table_header'){
+    } else if (request.cmd == 'gain_table_header') {
         if (request.code == response_success) {
             var tableHeader = localStorage.getItem("table_header");
             dto.cmd = "send_response";
@@ -247,4 +251,26 @@ async function loadingProcess(row, files) {
         //console.info(response);
         //return response;
     });
+}
+
+/**
+ * 获取可执行jsx方法
+ * @param local
+ */
+function evalJSX(local) {
+    var jsx = ""
+    var href = window.location.href;
+    href = href.match(/chrome-extension:\/\/[a-zA-Z]*\//g);
+    $.ajax({
+        url: href + local + ".jsx",
+        type: "get",
+        async: false,
+        success: function (response) {
+            jsx = response
+        },
+        error: function (error) {
+            jsx = error
+        }
+    })
+    return jsx;
 }
