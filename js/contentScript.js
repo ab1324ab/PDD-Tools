@@ -655,11 +655,11 @@ function writeImgDiv(detailImg) {
                     groupIndex: detailImg.groupIndex,
                     index: detailImg.index == undefined ? $("#bodyContent").find("div[id^='src_']").length + 1 : detailImg.index,
                 }
-                if (max_image_width < img.width) {
+                if (max_image_width <= img.width) {
                     max_image_width = img.width;
                     $("#width_slider").jRange('updateRange', '0,' + max_image_width + '', '0,' + max_image_width + '');
                 }
-                if (max_image_height < img.height) {
+                if (max_image_height <= img.height) {
                     max_image_height = img.height;
                     $("#height_slider").jRange('updateRange', '0,' + max_image_height + '', '0,' + max_image_height + '');
                 }
@@ -724,7 +724,7 @@ function aiparser() {
     function PrefixZero(num, n) {
         return (Array(n).join(0) + num).slice(-n);
     }
-
+    imageData.length = 0
     // 发送图片详情信息
     function send(img) {
         writeImgDiv(img, {})
