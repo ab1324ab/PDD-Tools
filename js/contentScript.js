@@ -382,7 +382,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 download.append(isvgDownload)
                 var spanTextDownload = $("<span style='display: inline-block;vertical-align: middle;'>下载</span>")
                 download.click(function () {
-                    var imgDiv = $("#bodyContent").find("div[id^='src_'][class!='cancel-img']").find("img")
+                    var imgDiv = $("#bodyContent").find("div[id^='src_'][class!='cancel-img']").find("img");
                     packageImages(imgDiv)
                     console.info(imgDiv)
                 })
@@ -630,67 +630,73 @@ function filterDetailImg(parame) {
  * @param src
  */
 function writeImgDiv(detailImg) {
-
     var img_url = detailImg.src;
-    var img = new Image();
-    img.src = img_url;
-    img.onload = function () {
-        console.log('from:onload : width:' + img.width + ',height:' + img.height);
-        var imgHeight = 100
-        var imgWidth = 100
-        var imgData = {
-            src: img.src,
-            alt: detailImg.alt,
-            height: img.height,
-            width: img.width,
-            group: detailImg.group,
-            groupIndex: detailImg.groupIndex,
-            index: detailImg.index == undefined ? $("#bodyContent").find("div[id^='src_']").length + 1 : detailImg.index,
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', detailImg.src, true);
+    xhr.responseType = 'arraybuffer'; // 重点
+    let that = this; // 这个不是必须，只是用来保存this的指向
+    xhr.onload = function (e) {
+        if (this.status == 200) {
+            let result = this.response;
+            var base64 = btoa(new Uint8Array(result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+            img_url = 'data:' + this.getResponseHeader('content-type') + ';base64,' + base64;
+            var img = new Image();
+            img.src = img_url;
+            img.onload = function () {
+                console.log('from:onload : width:' + img.width + ',height:' + img.height);
+                var imgHeight = 100
+                var imgWidth = 100
+                var imgData = {
+                    src: img_url,
+                    alt: detailImg.alt,
+                    height: img.height,
+                    width: img.width,
+                    group: detailImg.group,
+                    groupIndex: detailImg.groupIndex,
+                    index: detailImg.index == undefined ? $("#bodyContent").find("div[id^='src_']").length + 1 : detailImg.index,
+                }
+                if (max_image_width < img.width) {
+                    max_image_width = img.width;
+                    $("#width_slider").jRange('updateRange', '0,' + max_image_width + '', '0,' + max_image_width + '');
+                }
+                if (max_image_height < img.height) {
+                    max_image_height = img.height;
+                    $("#height_slider").jRange('updateRange', '0,' + max_image_height + '', '0,' + max_image_height + '');
+                }
+                imageData.push(imgData);
+                var imgDiv = $("<div id='src_" + i + "' style='border: 1px solid red;width: " + imgWidth + "px;height: " + imgHeight + "px;margin: 5px;display: inline-flex;position: relative;'></div>")
+                $(imgDiv).click(function () {
+                    $(this).toggleClass("cancel-img");
+                })
+                var imgD = $("<img src='" + img_url + "' name='" + detailImg.alt + "' height='" + imgHeight + "' width='" + imgWidth + "'>")
+                imgDiv.append(imgD)
+                var title = $("<div style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + detailImg.alt + "</div><div style='padding-left: 5px'>" + img.width + " x " + img.height + "</div></div>")
+                imgDiv.append(title)
+                $("#bodyContent").append(imgDiv)
+            };
         }
-        if (max_image_width < img.width) {
-            max_image_width = img.width;
-            $("#width_slider").jRange('updateRange', '0,' + max_image_width + '', '0,' + max_image_width + '');
-        }
-        if (max_image_height < img.height) {
-            max_image_height = img.height;
-            $("#height_slider").jRange('updateRange', '0,' + max_image_height + '', '0,' + max_image_height + '');
-        }
-        // $("#width_slider").jRange('updateRange', '0,100', 10);
-        imageData.push(imgData);
-        var imgDiv = $("<div id='src_" + i + "' style='border: 1px solid red;width: " + imgWidth + "px;height: " + imgHeight + "px;margin: 5px;display: inline-flex;position: relative;'></div>")
-        $(imgDiv).click(function () {
-            $(this).toggleClass("cancel-img");
-        })
-        var imgD = $("<img src='" + img_url + "' name='" + detailImg.alt + "' height='" + imgHeight + "' width='" + imgWidth + "'>")
-        imgDiv.append(imgD)
-        // data='" + JSON.stringify(imgData) + "'
-        var title = $("<div style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + detailImg.alt + "</div><div style='padding-left: 5px'>" + img.width + " x " + img.height + "</div></div>")
-        imgDiv.append(title)
-        $("#bodyContent").append(imgDiv)
     };
+    xhr.onerror = this, ev => {
+        console.info(ev);
+    };
+    xhr.send();
 }
 
 function packageImages(imgs) {
     var cover_img = $("<div style='position: absolute;width: 100%;height: 100%;background-color: #efefef;z-index: 1;opacity: 0.8;top: 36px;'></div>")
-    var status_div = $("<div id='status_div' style='font-size: 35px;font-weight: 600;width: 400px;margin-top: 20px;text-align: center;color: black;'>处理中。。。。。</div>")
+    var status_div = $("<div id='status_div' style='font-size: 35px;font-weight: 600;width: 400px;margin-top: 20px;text-align: center;color: black;'>文件转码请稍等</div>")
     cover_img.append(status_div)
     $("#bodyContent").append(cover_img)
-    //var imgs = $('img');
-    var imgsSrc = [];
     var imgBase64 = [];
     var imageSuffix = [];//图片后缀
     var zip = new JSZip();
-    //zip.file("readme.txt", "案件详情资料\n");
-    var img = zip.folder("images");
+    var title = $("title").text();
+    var img = zip.folder(title);
     for (var i = 0; i < imgs.length; i++) {
         var src = imgs[i].getAttribute("src");
-        var suffix = src.substring(src.lastIndexOf("."));
+        var suffix = "." + src.match(/data:image\/(\S*);base64,/)[1];
         imageSuffix.push(suffix);
-        getBase64(imgs[i].getAttribute("src")).then(function (base64) {
-            imgBase64.push(base64.substring(22));
-        }, function (err) {
-            console.log(err);//打印异常信息
-        });
+        imgBase64.push(src.split(',')[1]);
     }
 
     function timer() {
@@ -700,41 +706,17 @@ function packageImages(imgs) {
                     img.file(imgs[i].name + imageSuffix[i], imgBase64[i], {base64: true});
                 }
                 zip.generateAsync({type: "blob"}).then(function (content) {
-                    saveAs(content, "images.zip");
+                    saveAs(content, title + ".zip");
                 });
-                $('#status_div').text('正在保存。。。。。');
+                $('#status_div').text(imgs.length + '个，正在保存请稍等');
             } else {
                 $('#status_div').text('已完成：' + imgBase64.length + '/' + imgs.length);
                 timer();
             }
-        }, 100);
+        }, 1000);
     }
 
     timer();
-}
-
-//传入图片路径，返回base64
-function getBase64(img) {
-    function getBase64Image(img, width, height) {//width、height调用时传入具体像素值，控制大小 ,不传则默认图像大小
-        var canvas = document.createElement("canvas");
-        canvas.width = width ? width : img.width;
-        canvas.height = height ? height : img.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        var dataURL = canvas.toDataURL();
-        return dataURL;
-    }
-
-    var image = new Image();
-    image.crossOrigin = 'Anonymous';
-    image.src = img;
-    var deferred = $.Deferred();
-    if (img) {
-        image.onload = function () {
-            deferred.resolve(getBase64Image(image));//将base64传给done上传处理
-        }
-        return deferred.promise();//问题要让onload完成后再return sessionStorage['imgTest']
-    }
 }
 
 function aiparser() {
@@ -742,15 +724,22 @@ function aiparser() {
     function PrefixZero(num, n) {
         return (Array(n).join(0) + num).slice(-n);
     }
+
     // 发送图片详情信息
     function send(img) {
         writeImgDiv(img, {})
     }
+
     // 获取后台文件地址
-    sendMessageToBackground({cmd: "gain_static_resource_address", code: response_success }, function (response) {
+    sendMessageToBackground({cmd: "gain_static_resource_address", code: response_success}, function (response) {
         var result = eval(response)
         dto.type = result;
-        sendMessageToBackground({cmd: "gain_static_source_javascript_plugin", code: response_success, requestDto: dto }, function (response) {
+        console.info(result)
+        sendMessageToBackground({
+            cmd: "gain_static_source_javascript_plugin",
+            code: response_success,
+            requestDto: dto
+        }, function (response) {
             eval(response);
         })
     })
