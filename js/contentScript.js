@@ -247,7 +247,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             var clientHeight = document.documentElement.clientHeight
             if (batchDownloadDrawer.length <= 0) {
                 var parame = {};
-                batchDownloadDrawer = $("<div id='batchDownloadDrawer' style='background-color: white;z-index: 9999999999;position: fixed;bottom: 0;width: 100%;height: 0px;border-top-color: #dae0e5;border-top-style: solid;border-top-width: 1px;'></div>")
+                batchDownloadDrawer = $("<div id='batchDownloadDrawer' style='background-color: white;z-index: 9999999999;position: fixed;bottom: 0;left: 0;width: 100%;height: 0px;border-top-color: #dae0e5;border-top-style: solid;border-top-width: 1px;'></div>")
                 var title = $("<div style='cursor: n-resize;padding: 5px 20px;display: flex;flex-wrap: wrap;background-color: #f4f4f5;border-bottom-color: #dae0e5;border-bottom-style: solid;border-bottom-width: 1px;'></div>")
                 var title_text = $("<div style='flex-basis: 0;flex-grow: 1;min-width: 0;max-width: 100%;'>图片下载</div>")
                 title.append(title_text)
@@ -684,7 +684,7 @@ function writeImgDiv(detailImg) {
 
 function packageImages(imgs) {
     var cover_img = $("<div style='position: absolute;width: 100%;height: 100%;background-color: #efefef;z-index: 1;opacity: 0.8;top: 36px;'></div>")
-    var status_div = $("<div id='status_div' style='font-size: 35px;font-weight: 600;width: 400px;margin-top: 20px;text-align: center;color: black;'>文件转码请稍等</div>")
+    var status_div = $("<div id='status_div' style='font-size: 35px;font-weight: 600;width: 520px;margin-top: 20px;text-align: center;color: black;'>文件转码请稍等</div>")
     cover_img.append(status_div)
     $("#bodyContent").append(cover_img)
     var imgBase64 = [];
@@ -708,7 +708,7 @@ function packageImages(imgs) {
                 zip.generateAsync({type: "blob"}).then(function (content) {
                     saveAs(content, title + ".zip");
                 });
-                $('#status_div').text(imgs.length + '个，正在保存请稍等');
+                $('#status_div').html(imgs.length + '个，正在保存请稍等...<br/><span style="font-size: 20px">继续操作请点击重置按钮</span>');
             } else {
                 $('#status_div').text('已完成：' + imgBase64.length + '/' + imgs.length);
                 timer();
