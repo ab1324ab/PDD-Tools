@@ -92,6 +92,7 @@
     cursor: pointer;
     align-self: center;
     margin-left: 2px;
+    font-size: 20px;
     position: absolute; /*这句不能少，否则动不起来*/
     animation: hurong 0.5s infinite alternate; /*keyframes名称，动画时间，循环*/
     -moz-animation: hurong 0.5s infinite alternate; /*火狐*/
@@ -144,7 +145,7 @@
 
 .drawer-door {
     height: 100%;
-    width: 16px;
+    width: 25px;
     background-color: white;
     float: right;
     border-top-right-radius: 5px;
