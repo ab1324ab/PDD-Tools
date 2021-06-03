@@ -144,7 +144,9 @@ function getStorageKey() {
 // 接受来自前端的信息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.cmd == 'gain_static_resource_address') {
-        sendResponse(evalJSX("/js/plugin.distribution"));
+        response_dto.plugins = localStorage.getItem("init_plugin_array");
+        response_dto.jsx = evalJSX("/js/plugin.distribution")
+        sendResponse(response_dto);
     } else if (request.cmd == 'gain_static_source_javascript_plugin') {
         sendResponse(evalJSX("/js/plugin/" + request.requestDto.type));
     } else if (request.cmd == 'send_element_background') {
@@ -251,6 +253,16 @@ async function loadingProcess(row, files) {
         //console.info(response);
         //return response;
     });
+}
+
+/**
+ * 获取初始化插件
+ * @param
+ */
+function initPluginArray() {
+    var distribution = evalJSX("/js/plugin.distribution")
+    distribution = distribution.replace("plugin_select();", "initPlugin();");
+    return distribution
 }
 
 /**

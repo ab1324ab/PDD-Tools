@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description" : "订单操作工具",
   "name": "订单操作工具",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'",
   "browser_action": {
     "default_icon": "images/favicon.png",
     "default_title": "订单操作工具",

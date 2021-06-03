@@ -16,7 +16,7 @@ var cover_content =
     '       </div>' +
     '       <div style="text-align: center;height: auto;max-height: 400px;overflow-y: auto;">' +
     '           <div style="display: inline-block;vertical-align: middle;">' +
-    '               <img style="display: inline-block;vertical-align: middle;" width="50" src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1602329894089&amp;di=d74ebf0e63b11375bc6b5c687ac394de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.ui.cn%2Fdata%2Ffile%2F4%2F9%2F2%2F2108294.gif">' +
+    '               <img style="display: inline-block;vertical-align: middle;" width="50" src="http://img.ui.cn/data/file/4/9/2/2108294.gif">' +
     '               <span>处理中...</span>' +
     '           </div>' +
     '       </div>' +
@@ -732,7 +732,8 @@ function aiparser() {
 
     // 获取后台文件地址
     sendMessageToBackground({cmd: "gain_static_resource_address", code: response_success}, function (response) {
-        var result = eval(response)
+        var jsx = response.jsx.replace("[$$]", response.plugins);
+        var result = eval(jsx)
         dto.type = result;
         console.info(result)
         sendMessageToBackground({

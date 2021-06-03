@@ -149,13 +149,14 @@ $(function () {
         }
     });
 
-    function sendToContent(cmd, dto) {
+    function sendToContent(cmd, dto, callback) {
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
             initBackgroundJavaScript().sendMessageToContentScript({
                 cmd: cmd,
                 pageTabs: tabs,
                 request: dto
             }, function (response) {
+                if (callback) callback(response);
                 console.info(response);
             });
         });
@@ -173,83 +174,131 @@ $(function () {
                         $(v).parent().css("display", "none");
                     });
                 } else {
+                    // 打开抽屉
                     $(v).parent().css("display", "block");
                     $(v).css("display", "block");
                     $(v).animate({width: "245px"});
-                    if (sortable == undefined) {
-                        sortable = Sortable.create(document.getElementById('tableHeader'), {
-                            animation: 150,
-                            store: {//缓存到localStorage
-                                get: function (sortable) {
-                                    var table_header_arr = [];
-                                    var order = [];
-                                    var tableHeader = localStorage.getItem("table_header");
-                                    if (tableHeader != undefined) {
-                                        table_header_arr = JSON.parse(tableHeader)
-                                        table_header_arr.forEach(v => {
-                                            order.push(v.generateId)
-                                        })
-                                    }
-                                    return order ? order : [];
-                                },
-                                set: function (sortable) {
-                                    var order = sortable.toArray();
-                                    var table_header_arr = [];
-                                    Array.prototype.forEach.call($("#tableHeader").children(), (el => {
-                                        var table_header = {};
-                                        let str = el.tagName + el.className + el.src + el.href + el.textContent,
-                                            i = str.length,
-                                            sum = 0;
-                                        while (i--) {
-                                            sum += str.charCodeAt(i)
-                                        }
-                                        var generateId = sum.toString(36);
-                                        table_header.generateId = generateId;
-                                        table_header.serial = el.getAttribute("serial");
-                                        table_header.text = el.innerText;
-                                        table_header_arr.push(table_header);
-                                    }));
-                                    var content = localStorage.getItem("init_table_header");
-                                    if (content != undefined) {
-                                        if (table_header_arr.length > 0) {
-                                            var initTableHeaderArr = JSON.parse(content);
-                                            initTableHeaderArr.forEach(v => {
-                                                table_header_arr.forEach(vt => {
-                                                    if (v.text == vt.text) {
-                                                        vt.serial = v.serial;
-                                                    }
-                                                })
-                                            })
-                                        }
-                                        localStorage.setItem("table_header", JSON.stringify(table_header_arr));
-                                    }
-                                }
-                            },
-                            onAdd: function (evt) {
-                                console.log('onAdd.foo:', [evt.item, evt.from]);
-                            },
-                            onUpdate: function (evt) {
-                                console.log('onUpdate.foo:', [evt.item, evt.from]);
-                            },
-                            onRemove: function (evt) {
-                                console.log('onRemove.foo:', [evt.item, evt.from]);
-                            },
-                            onStart: function (evt) {
-                                console.log('onStart.foo:', [evt.item, evt.from]);
-                            },
-                            onSort: function (evt) {
-                                console.log('onStart.foo:', [evt.item, evt.from]);
-                            },
-                            onEnd: function (evt) {
-                                console.log('onEnd.foo:', [evt.item, evt.from]);
-                            }
-                        });
-                    }
+                    processCurrent(toggle);
                 }
             }
         })
-
     });
 
-
+    /**
+     * 打开抽屉, 业务处理
+     * @param
+     */
+    function processCurrent(v) {
+        switch (v) {
+            case "setting_order_table" || "setting_order_table_all":
+                if (sortable == undefined) {
+                    sortable = Sortable.create(document.getElementById('tableHeader'), {
+                        animation: 150,
+                        store: {//缓存到localStorage
+                            get: function (sortable) {
+                                var table_header_arr = [];
+                                var order = [];
+                                var tableHeader = localStorage.getItem("table_header");
+                                if (tableHeader != undefined) {
+                                    table_header_arr = JSON.parse(tableHeader)
+                                    table_header_arr.forEach(v => {
+                                        order.push(v.generateId)
+                                    })
+                                }
+                                return order ? order : [];
+                            },
+                            set: function (sortable) {
+                                var order = sortable.toArray();
+                                var table_header_arr = [];
+                                Array.prototype.forEach.call($("#tableHeader").children(), (el => {
+                                    var table_header = {};
+                                    let str = el.tagName + el.className + el.src + el.href + el.textContent,
+                                        i = str.length,
+                                        sum = 0;
+                                    while (i--) {
+                                        sum += str.charCodeAt(i)
+                                    }
+                                    var generateId = sum.toString(36);
+                                    table_header.generateId = generateId;
+                                    table_header.serial = el.getAttribute("serial");
+                                    table_header.text = el.innerText;
+                                    table_header_arr.push(table_header);
+                                }));
+                                var content = localStorage.getItem("init_table_header");
+                                if (content != undefined) {
+                                    if (table_header_arr.length > 0) {
+                                        var initTableHeaderArr = JSON.parse(content);
+                                        initTableHeaderArr.forEach(v => {
+                                            table_header_arr.forEach(vt => {
+                                                if (v.text == vt.text) {
+                                                    vt.serial = v.serial;
+                                                }
+                                            })
+                                        })
+                                    }
+                                    localStorage.setItem("table_header", JSON.stringify(table_header_arr));
+                                }
+                            }
+                        },
+                        onAdd: function (evt) {
+                            console.log('onAdd.foo:', [evt.item, evt.from]);
+                        },
+                        onUpdate: function (evt) {
+                            console.log('onUpdate.foo:', [evt.item, evt.from]);
+                        },
+                        onRemove: function (evt) {
+                            console.log('onRemove.foo:', [evt.item, evt.from]);
+                        },
+                        onStart: function (evt) {
+                            console.log('onStart.foo:', [evt.item, evt.from]);
+                        },
+                        onSort: function (evt) {
+                            console.log('onStart.foo:', [evt.item, evt.from]);
+                        },
+                        onEnd: function (evt) {
+                            console.log('onEnd.foo:', [evt.item, evt.from]);
+                        }
+                    });
+                }
+                break;
+            case "setting_plugin_manage":
+                var result = initBackgroundJavaScript().initPluginArray();
+                var pluginArray = eval(result)
+                var initPluginArray = localStorage.getItem("init_plugin_array");
+                var pluginArr = eval('(' + initPluginArray + ')');
+                $("#pluginDistribution").empty();
+                pluginArray.forEach(val => {
+                    var li = $("<li serial='0' style='padding-left: 10px;'></li>");
+                    var div = $("<div class='custom-control custom-switch'></div>");
+                    var input = $("<input type='checkbox' class='custom-control-input' id='" + val.url + "'>")
+                    if (pluginArr != undefined && pluginArr.includes(val.url)) {
+                        input.prop("checked", false);
+                    } else {
+                        input.prop("checked", true);
+                    }
+                    input.change(function () {
+                        var checked = $(this).is(':checked');
+                        console.info(checked);
+                        if (!checked) {
+                            if (pluginArr == undefined) {
+                                pluginArr = new Array()
+                            }
+                            pluginArr.push($(this).attr("id"));
+                            localStorage.setItem("init_plugin_array", JSON.stringify(pluginArr));
+                        } else {
+                            if (pluginArr != undefined) {
+                                var index = pluginArr.indexOf($(this).attr("id"));
+                                pluginArr.splice(index, 1);
+                                localStorage.setItem("init_plugin_array", JSON.stringify(pluginArr));
+                            }
+                        }
+                    })
+                    div.append(input);
+                    div.append("<label style='padding-top: 3px;display: block;' class='custom-control-label' for='" + val.url + "'>" + val.name + "</label>");
+                    li.append(div);
+                    $("#pluginDistribution").append(li);
+                })
+                break;
+        }
+    }
 });
