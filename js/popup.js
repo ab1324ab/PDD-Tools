@@ -7,6 +7,7 @@ var sortable;
 var object = {
     "prompt": "鼠标停留对应按钮显示提示信息",
     "open_back": "打开对应后台",
+    "open_yangkeduo_pdd": "打开网页版拼多多商城",
     "copy_order_address": "智能订单操作点击解锁开始,输出窗口操作表格",
     "stop_opera": "停止当前的执行操作",
     "order_image_loading_Process": "智能订单截图识别,分辨水军信息",
@@ -114,6 +115,11 @@ $(function () {
             } else if ($(this).val() == "stop_opera") {
                 dto.code = response_success;
                 dto.url = ""
+                sendToContent($(this).val(), dto);
+                window.close();
+            }if ($(this).val() == "open_yangkeduo_pdd") {
+                dto.code = response_success;
+                dto.url = "https://mobile.yangkeduo.com"
                 sendToContent($(this).val(), dto);
                 window.close();
             } else if ($(this).val() == "add_table_handle") {

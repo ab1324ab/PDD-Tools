@@ -67,7 +67,7 @@ $("body").append('<div id="cover" style="display: none">' + cover_content + '</d
 $("body").append(script);
 // 接受来自后端的信息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.cmd == "open_back") {
+    if (request.cmd == "open_back" || request.cmd == "open_yangkeduo_pdd") {
         if (request.request.code == response_success) {
             window.open(request.request.url);
             sendResponse(response_dto);
@@ -683,7 +683,7 @@ function writeImgDiv(detailImg) {
 }
 
 function packageImages(imgs) {
-    var cover_img = $("<div style='position: absolute;width: 100%;height: 100%;background-color: #efefef;z-index: 1;opacity: 0.8;top: 36px;'></div>")
+    var cover_img = $("<div style='position: absolute;width: 100%;height: 100%;background-color: #efefef;z-index: 1;opacity: 0.8;top: 29px;left: 250px'></div>")
     var status_div = $("<div id='status_div' style='font-size: 35px;font-weight: 600;width: 520px;margin-top: 20px;text-align: center;color: black;'>文件转码请稍等</div>")
     cover_img.append(status_div)
     $("#bodyContent").append(cover_img)
