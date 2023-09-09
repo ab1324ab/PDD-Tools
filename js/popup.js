@@ -127,8 +127,7 @@ $(function () {
             }
         }
     });
-    var shifou = false
-    $(".list-group-item.list-group-item-action").on("mouseenter mouseleave click", function (event) {
+    let promptEvent = function (event) {
         if (event.type == "mouseleave") { // 移出
             $("#prompt").text(object["prompt"])
         } else if (event.type == "mouseenter") {// 移入
@@ -153,8 +152,9 @@ $(function () {
                 window.close();
             }
         }
-    });
-
+    }
+    $(".list-group-item.list-group-item-action").on("click", promptEvent);
+    $(".container").on("mouseenter mouseleave", promptEvent);
     function sendToContent(cmd, dto, callback) {
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
             initBackgroundJavaScript().sendMessageToContentScript({

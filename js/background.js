@@ -12,7 +12,7 @@ function initAccess_token() {
     var storage = window.localStorage;
     var access = storage.getItem("access");
     var isGain = true;
-    if (access != undefined) {
+    if (access !== undefined) {
         access = JSON.parse(access);
         if (access.expires_in > token.getTime()) {
             access_token = access.access_token;
@@ -39,20 +39,26 @@ function initAccess_token() {
             },
             error: function (error) {
                 console.info(error)
-                _this.spinner_show(false, "初始化失败");
+                _this.spinner_show('order_image_loading_Process_sms_message', true, "获取AI识别Token失败");
             }
         })
     }
 }
 
-function spinner_show(succ, message) {
+function spinner_show(byid, succ, message) {
     var views = chrome.extension.getViews({type: 'popup'});
     if (succ && views.length > 0) {
         views[0].document.getElementById("spinnerBorder").style.display = 'none';
         views[0].document.getElementById("featureList").style.display = 'block';
     }
-    if (views.length > 0) {
-        views[0].document.getElementById("sms_message").innerText = message;
+    if (byid !== undefined && views.length > 0) {
+        views[0].document.getElementById(byid).parentElement.parentElement.style.backgroundColor = '#e9ecef';
+        views[0].document.getElementById(byid).parentElement.style.color = '#adb5bd';
+        views[0].document.getElementById(byid).parentElement.parentElement.style.borderColor = '#dae0e5';
+        views[0].document.getElementById(byid).parentElement.parentElement.setAttribute('aria-disabled','true');
+        let className = views[0].document.getElementById(byid).parentElement.parentElement.className;
+        views[0].document.getElementById(byid).parentElement.parentElement.className = className + ' ' + 'disabled';
+        views[0].document.getElementById(byid).innerText = message;
     }
 }
 

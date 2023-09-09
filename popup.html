@@ -20,13 +20,16 @@
                 <div style="margin-top: 15px">
                     <div id="spinnerBorder" class="text-center list-group-item list-group-item-action">
                         <div class="spinner-border" role="status"><span class="sr-only"></span></div>
-                        <div style="color: red;font-size: 14px;" id="sms_message"></div>
+                        <!--                        <div style="color: red;font-size: 14px;" id="sms_message"></div>-->
                     </div>
-                    <div id="featureList" style=" display: none; ">
-                        <div class="container">
+                    <div id="featureList" style=" display: block; ">
+                        <div class="container" value="copy_order_address">
                             <div class="row">
                                 <div class="col-9 list-group-item list-group-item-action" value="copy_order_address" style="cursor: pointer">
-                                    <a href="#" style="color: #495057;text-decoration: none;">复制订单信息</a>
+                                    <a href="#" style="color: #495057;text-decoration: none;">
+                                        复制订单信息
+                                        <small class="sms_message" id="copy_order_address_sms_message"></small>
+                                    </a>
                                 </div>
                                 <div class="col-3 list-group-item list-group-item-action" id="setting_order_table" data-toggle="setting_order_table" value="setting_order_table" style="cursor: pointer;border-top-width: 1px;">
                                     <a href="#" style="color: #495057;display: block;text-align: center;margin-top: -10px;">
@@ -39,13 +42,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <a href="#" value="order_image_loading_Process" class="list-group-item list-group-item-action">识别水军订单</a>
+                        <div class="container" style="padding: 0;" value="order_image_loading_Process">
+                            <div class="list-group-item list-group-item-action" value="order_image_loading_Process">
+                                <a href="#" style="color: #495057;text-decoration: none;">
+                                    识别水军订单
+                                    <small class="sms_message" id="order_image_loading_Process_sms_message"></small>
+                                </a>
+                            </div>
                         </div>
-                        <div class="container">
+                        <div class="container" value="video_image_batch_download">
                             <div class="row">
                                 <div class="col-9 list-group-item list-group-item-action" value="video_image_batch_download" style="cursor: pointer">
-                                    <a href="#" style="color: #495057;text-decoration: none;">批量图片下载</a>
+                                    <a href="#" style="color: #495057;text-decoration: none;">
+                                        批量图片下载
+                                        <small class="sms_message" id="video_image_batch_download_sms_message"></small>
+                                    </a>
                                 </div>
                                 <div class="col-3 list-group-item list-group-item-action" id="setting_plugin_manage" data-toggle="setting_plugin_manage" value="setting_plugin_manage" style="cursor: pointer;border-top-width: 1px;">
                                     <a href="#" style="color: #495057;display: block;text-align: center;margin-top: -10px;">
@@ -96,7 +107,7 @@
                     </div>
                 </div>
             </div>
-            <div class="drawer-mask" >
+            <div class="drawer-mask">
                 <div class="drawer" aria-drawer="setting_order_table">
                     <div class="drawer-door">
                         <div class="drawerHandle" data-toggle="setting_order_table">》</div>
@@ -115,7 +126,7 @@
                         </div>
                         <div class="drawer-scrollbar">
                             <ol id="tableHeader" style="padding-left: 50px">
-<!--                                <li serial="0"><img class="table-Header-li" style="margin-left: -50px;" src="images/delete.png"/><span>示例表头</span></li>-->
+                                <!--                                <li serial="0"><img class="table-Header-li" style="margin-left: -50px;" src="images/delete.png"/><span>示例表头</span></li>-->
                             </ol>
                         </div>
                     </div>
@@ -123,22 +134,22 @@
             </div>
             <div class="drawer-mask" style="z-index: 1;">
                 <div class="drawer" aria-drawer="setting_order_table_all" style="max-width: 200px">
-                <div class="drawer-door">
-                    <div class="drawerHandle" data-toggle="setting_order_table_all">》</div>
-                </div>
-                <div class="drawer-body">
-                    <div class="row" style="padding: 10px;">
-                        <div class="col-9">未使用表头</div>
+                    <div class="drawer-door">
+                        <div class="drawerHandle" data-toggle="setting_order_table_all">》</div>
                     </div>
-                    <div class="drawer-scrollbar">
-                        <ol id="newTableHeader" style="padding-left: 50px">
-<!--                            <li serial="0"><img class="table-Header-li" style="margin-left: -40px;" src="images/add.png"/><span>示例表头</span></li>-->
-                        </ol>
+                    <div class="drawer-body">
+                        <div class="row" style="padding: 10px;">
+                            <div class="col-9">未使用表头</div>
+                        </div>
+                        <div class="drawer-scrollbar">
+                            <ol id="newTableHeader" style="padding-left: 50px">
+                                <!--                            <li serial="0"><img class="table-Header-li" style="margin-left: -40px;" src="images/add.png"/><span>示例表头</span></li>-->
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
-            <div class="drawer-mask" >
+            <div class="drawer-mask">
                 <div class="drawer" aria-drawer="setting_plugin_manage">
                     <div class="drawer-door">
                         <div class="drawerHandle" data-toggle="setting_plugin_manage">》</div>
@@ -149,12 +160,12 @@
                         </div>
                         <div class="drawer-scrollbar">
                             <ol id="pluginDistribution" style="padding-left: 0px">
-<!--                                <li serial="0" style="padding-left: 10px;">-->
-<!--                                    <div class="custom-control custom-switch">-->
-<!--                                        <input type="checkbox" class="custom-control-input" id="customSwitch1">-->
-<!--                                        <label style="padding-top: 3px;display: block;" class="custom-control-label" for="customSwitch1">开启</label>-->
-<!--                                    </div>-->
-<!--                                </li>-->
+                                <!--                                <li serial="0" style="padding-left: 10px;">-->
+                                <!--                                    <div class="custom-control custom-switch">-->
+                                <!--                                        <input type="checkbox" class="custom-control-input" id="customSwitch1">-->
+                                <!--                                        <label style="padding-top: 3px;display: block;" class="custom-control-label" for="customSwitch1">开启</label>-->
+                                <!--                                    </div>-->
+                                <!--                                </li>-->
                             </ol>
                         </div>
                     </div>
@@ -174,11 +185,18 @@
     </div>
 </div>
 <style>
-
+    .sms_message {
+        color: #ff00008c;
+        font-size: 10px;
+        white-space: nowrap;
+        position: absolute;
+        margin-left: 5px;
+    }
 </style>
 </body>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/sortable.min.js?v=cc"></script>
 <script type="text/javascript" src="js/popup.js?v=cc"></script>
 <!--<script>document.write("<script type='text/javascript' src='js/popup.js?v="+Math.random()+"'><\/script>");</script>-->
+
 </html>
