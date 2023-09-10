@@ -6,6 +6,13 @@ var dto = {source: requst_source};
 var socket;
 var access_token = "";
 
+setBadge();
+function setBadge() {
+    chrome.browserAction.setBadgeText({text: 'v1.4'});
+    let color = "#F56C6C" + "#4eb61b" + "#4285f4";
+    chrome.browserAction.setBadgeBackgroundColor({color: '#F56C6C'});
+}
+
 function initAccess_token() {
     var _this = this;
     var token = new Date();
@@ -55,7 +62,7 @@ function spinner_show(byid, succ, message) {
         views[0].document.getElementById(byid).parentElement.parentElement.style.backgroundColor = '#e9ecef';
         views[0].document.getElementById(byid).parentElement.style.color = '#adb5bd';
         views[0].document.getElementById(byid).parentElement.parentElement.style.borderColor = '#dae0e5';
-        views[0].document.getElementById(byid).parentElement.parentElement.setAttribute('aria-disabled','true');
+        views[0].document.getElementById(byid).parentElement.parentElement.setAttribute('aria-disabled', 'true');
         let className = views[0].document.getElementById(byid).parentElement.parentElement.className;
         views[0].document.getElementById(byid).parentElement.parentElement.className = className + ' ' + 'disabled';
         views[0].document.getElementById(byid).innerText = message;
@@ -262,7 +269,7 @@ async function loadingProcess(row, files) {
 }
 
 /**
- * 获取初始化插件
+ * 获取获取图片初始化插件
  * @param
  */
 function initPluginArray() {

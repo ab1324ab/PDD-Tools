@@ -112,12 +112,7 @@ $(function () {
                 dto.url = "https://mms.pinduoduo.com/"
                 sendToContent($(this).val(), dto);
                 window.close();
-            } else if ($(this).val() == "stop_opera") {
-                dto.code = response_success;
-                dto.url = ""
-                sendToContent($(this).val(), dto);
-                window.close();
-            }if ($(this).val() == "open_yangkeduo_pdd") {
+            } else if ($(this).val() == "open_yangkeduo_pdd") {
                 dto.code = response_success;
                 dto.url = "https://mobile.yangkeduo.com"
                 sendToContent($(this).val(), dto);
@@ -149,6 +144,11 @@ $(function () {
             } else if (value == "video_image_batch_download") {
                 dto.code = response_success;
                 sendToContent(value, dto);
+                window.close();
+            } else if ($(this).val() == "stop_opera") {
+                dto.code = response_success;
+                dto.url = ""
+                sendToContent($(this).val(), dto);
                 window.close();
             }
         }
