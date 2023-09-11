@@ -249,7 +249,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var parame = {};
                 batchDownloadDrawer = $("<div id='batchDownloadDrawer' style='background-color: white;z-index: 9999999999;position: fixed;bottom: 0;left: 0;width: 100%;height: 0px;border-top-color: #dae0e5;border-top-style: solid;border-top-width: 1px;'></div>")
                 var title = $("<div style='cursor: n-resize;padding: 5px 20px;display: flex;flex-wrap: wrap;background-color: #f4f4f5;border-bottom-color: #dae0e5;border-bottom-style: solid;border-bottom-width: 1px;'></div>")
-                var title_text = $("<div style='flex-basis: 0;flex-grow: 1;min-width: 0;max-width: 100%;'>图片下载</div>")
+                var title_text = $("<div style='flex-basis: 0;flex-grow: 1;min-width: 0;max-width: 100%;color: #0b2e13'>图片下载</div>")
                 title.append(title_text)
                 var operation = $("<div style='flex-basis: 0;flex-grow: 1;min-width: 0;max-width: 100%;text-align: right;'></div>")
                 var minButt = $("<a style='cursor:default;border: 1px solid #ced4da;padding: 0 5px;height: 18px;' class='btn-plugin btn-plugin-light'></a>")
@@ -309,7 +309,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 var ul = $("<ul style='list-style-type: none;padding: 0;'></ul>")
                 // li排序
                 var sortLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;'></li>")
-                var select = $("<select id='sort_select' style='appearance: none;-moz-appearance:none;-webkit-appearance:none;-moz-appearance:none;-webkit-appearance:none;background: url(https://inews.gtimg.com/newsapp_bt/0/5443201980/640) no-repeat scroll right center transparent;background-size: 20px;display: block;width: 100%;height: 35px;padding: 2px 9px;font-weight: 400;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: 5px;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;' ></select>")
+                var select = $("<select id='sort_select' style='appearance: none;-moz-appearance:none;-webkit-appearance:none;-moz-appearance:none;-webkit-appearance:none;background: url(https://ts1.cn.mm.bing.net/th/id/R-C.560955a…?rik=zkzlmcetdtifkQ&riu=http%3a%2f%2fpic.616pic.com%2fys_b_img%2f00%2f05%2f55%2fleaIulNCk8.jpg&ehk=q1hx84HQvPjHUTscydV9ofVpwPvL%2fspK82G3j4w47S0%3d&risl=&pid=ImgRaw&r=0) no-repeat scroll right center transparent;background-position-x: 95%;margin-bottom: 0;background-size: 20px;display: block;width: 100%;height: 35px;padding: 2px 9px;font-weight: 400;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: 5px;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;' ></select>")
                 var option = $("<option style='font-size: 16px;' value='0'>原排序</option>")
                 select.append(option)
                 var maxOption = $("<option style='font-size: 16px;' value='1'>大图优先</option>")
@@ -337,21 +337,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 ul.append(viewLi)
                 // 高度
                 var heightLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'></li>")
-                var height = $("<div style='width: 100%;max-width: 40px;line-height: 2;'>高度</div>")//<input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='高度'/>
+                var height = $("<div style='width: 100%;max-width: 40px;line-height: 2;color: #0b2e13'>高度</div>")//<input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='高度'/>
                 var height_slider = $("<div id='height_slider'></div>")
                 heightLi.append(height)
                 heightLi.append(height_slider)
                 ul.append(heightLi)
                 // 宽度
                 var widthtLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'></li>")
-                var width = $("<div style='width: 100%;max-width: 40px;line-height: 2;'>宽度</div>")//<input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='宽度'/>
+                var width = $("<div style='width: 100%;max-width: 40px;line-height: 2;color: #0b2e13'>宽度</div>")//<input type='text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='宽度'/>
                 var width_slider = $("<div id='width_slider'></div>")
                 widthtLi.append(width)
                 widthtLi.append(width_slider)
                 ul.append(widthtLi)
                 // 名称
-                var filterLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'><div style='width: 100%;max-width: 40px;line-height: 2;'>名称</div></li>")
-                var filter = $("<input type='text' id='filter_text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;' class='btn-plugin' placeholder='输入过滤名称'/>")
+                var filterLi = $("<li style='padding: 12px 20px;border: 1px solid #e9ecef;display: flex;'><div style='width: 100%;max-width: 40px;line-height: 35px;color: #0b2e13'>名称</div></li>")
+                var filter = $("<input type='text' id='filter_text' style='width: 100%;font-weight: 400;color: #495057;border: 1px solid #ced4da;height: 35px;margin-bottom: 0;' class='btn-plugin' placeholder='输入过滤名称'/>")
                 filter.on("input propertychange", function () {
                     parame.name = this.value;
                     filterDetailImg(parame);
@@ -430,6 +430,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
             }
         }
+        sendResponse(response_dto);
+    } else if (request.cmd == "query_detail_img_base64_background") {
+        if (request.request.code == response_success) writeImgDivBase64(request.request.image, request.base64);
         sendResponse(response_dto);
     }
 });
@@ -545,7 +548,7 @@ function writeInCover(tableContent) {
 
 function sendMessageToBackground(message, callback) {
     chrome.runtime.sendMessage(message, res => {
-        callback(res);
+        if (callback !== undefined) callback(res);
     })
 }
 
@@ -629,57 +632,42 @@ function filterDetailImg(parame) {
  * 写出图片到列表
  * @param src
  */
-function writeImgDiv(detailImg) {
-    var img_url = detailImg.src;
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', detailImg.src, true);
-    xhr.responseType = 'arraybuffer'; // 重点
-    let that = this; // 这个不是必须，只是用来保存this的指向
-    xhr.onload = function (e) {
-        if (this.status == 200) {
-            let result = this.response;
-            var base64 = btoa(new Uint8Array(result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-            img_url = 'data:' + this.getResponseHeader('content-type') + ';base64,' + base64;
-            var img = new Image();
-            img.src = img_url;
-            img.onload = function () {
-                console.log('from:onload : width:' + img.width + ',height:' + img.height);
-                var imgHeight = 100
-                var imgWidth = 100
-                var imgData = {
-                    src: img_url,
-                    alt: detailImg.alt,
-                    height: img.height,
-                    width: img.width,
-                    group: detailImg.group,
-                    groupIndex: detailImg.groupIndex,
-                    index: detailImg.index == undefined ? $("#bodyContent").find("div[id^='src_']").length + 1 : detailImg.index,
-                }
-                if (max_image_width <= img.width) {
-                    max_image_width = img.width;
-                    $("#width_slider").jRange('updateRange', '0,' + max_image_width + '', '0,' + max_image_width + '');
-                }
-                if (max_image_height <= img.height) {
-                    max_image_height = img.height;
-                    $("#height_slider").jRange('updateRange', '0,' + max_image_height + '', '0,' + max_image_height + '');
-                }
-                imageData.push(imgData);
-                var imgDiv = $("<div id='src_" + i + "' style='border: 1px solid red;width: " + imgWidth + "px;height: " + imgHeight + "px;margin: 5px;display: inline-flex;position: relative;'></div>")
-                $(imgDiv).click(function () {
-                    $(this).toggleClass("cancel-img");
-                })
-                var imgD = $("<img src='" + img_url + "' name='" + detailImg.alt + "' height='" + imgHeight + "' width='" + imgWidth + "'>")
-                imgDiv.append(imgD)
-                var title = $("<div style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + detailImg.alt + "</div><div style='padding-left: 5px'>" + img.width + " x " + img.height + "</div></div>")
-                imgDiv.append(title)
-                $("#bodyContent").append(imgDiv)
-            };
+function writeImgDivBase64(detailImg, base64) {
+    let img_url = base64;
+    let img = new Image();
+    img.src = img_url;
+    img.onload = function () {
+        console.log('from:onload : width:' + img.width + ',height:' + img.height);
+        var imgHeight = 100
+        var imgWidth = 100
+        var imgData = {
+            src: img_url,
+            alt: detailImg.alt,
+            height: img.height,
+            width: img.width,
+            group: detailImg.group,
+            groupIndex: detailImg.groupIndex,
+            index: detailImg.index == undefined ? $("#bodyContent").find("div[id^='src_']").length + 1 : detailImg.index,
         }
+        if (max_image_width <= img.width) {
+            max_image_width = img.width;
+            $("#width_slider").jRange('updateRange', '0,' + max_image_width + '', '0,' + max_image_width + '');
+        }
+        if (max_image_height <= img.height) {
+            max_image_height = img.height;
+            $("#height_slider").jRange('updateRange', '0,' + max_image_height + '', '0,' + max_image_height + '');
+        }
+        imageData.push(imgData);
+        var imgDiv = $("<div id='src_" + i + "' style='border: 1px solid red;width: " + imgWidth + "px;height: " + imgHeight + "px;margin: 5px;display: inline-flex;position: relative;'></div>")
+        $(imgDiv).click(function () {
+            $(this).toggleClass("cancel-img");
+        })
+        var imgD = $("<img src='" + img_url + "' name='" + detailImg.alt + "' height='" + imgHeight + "' width='" + imgWidth + "'>")
+        imgDiv.append(imgD)
+        var title = $("<div style='background: rgba(0, 0, 0, 0.5);color: white;width: 100px;bottom: 0;font-weight: 600;position: absolute;'><div style='padding-left: 5px'>" + detailImg.alt + "</div><div style='padding-left: 5px'>" + img.width + " x " + img.height + "</div></div>")
+        imgDiv.append(title)
+        $("#bodyContent").append(imgDiv)
     };
-    xhr.onerror = this, ev => {
-        console.info(ev);
-    };
-    xhr.send();
 }
 
 function packageImages(imgs) {
@@ -726,8 +714,14 @@ function aiparser() {
     }
     imageData.length = 0
     // 发送图片详情信息
-    function send(img) {
-        writeImgDiv(img, {})
+    function send(detailImg) {
+        // console.info(detailImg)
+        sendMessageToBackground({
+            cmd: "query_detail_img_base64_content_scripts",
+            code: response_success, image: detailImg
+        }, function (response) {
+            let res = response;
+        })
     }
 
     // 获取后台文件地址

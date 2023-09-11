@@ -162,7 +162,7 @@ $(function () {
                 pageTabs: tabs,
                 request: dto
             }, function (response) {
-                if (callback) callback(response);
+                if (callback !== undefined) callback(response);
                 console.info(response);
             });
         });

@@ -12,11 +12,10 @@
   "content_scripts": [
     {
       "matches": [
-        "http://*/*",
-        "https://*/*"
+        "<all_urls>"
       ],
       "css":[
-        "css/contentScript.css",
+        "css/onstage.css",
         "css/jquery.range.css"
       ],
       "img": [
@@ -27,7 +26,7 @@
         "js/jquery.range-min.js",
         "js/file.saver.min.js",
         "js/jszip.min.js",
-        "js/contentScript.js"
+        "js/onstage.js"
       ],
       "run_at": "document_end",
       "all_frames": false
@@ -46,7 +45,6 @@
   "permissions": [
     "tabs",
     "storage",
-    "http://*/*",
-    "https://*/*"
+    "<all_urls>"
   ]
 }

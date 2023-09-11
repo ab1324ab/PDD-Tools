@@ -5,6 +5,8 @@ function essentials() {
     document.querySelectorAll('img').forEach(function (img, index) {
         if($(img).attr("src") || $(img).attr("data-src")){
             var src = $(img).attr("src") || $(img).attr("data-src");
+            if (src.indexOf(window.location.protocol) === -1 && src.indexOf('base64') === -1 )
+                src = window.location.protocol +'//'+ window.location.host + src;
             send({
                 src: src,
                 group: '全图',

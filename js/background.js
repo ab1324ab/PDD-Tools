@@ -33,6 +33,7 @@ function initAccess_token() {
             type: "post",
             contentType: "application/x-www-form-urlencoded",
             async: true,
+            timeout : 2000, //超时时间设置，单位毫秒
             data: {token: token.getTime()},
             success: function (response) {
                 var client_secret = JSON.parse(response);
@@ -45,7 +46,6 @@ function initAccess_token() {
                 _this.spinner_show(true, "成功");
             },
             error: function (error) {
-                console.info(error)
                 _this.spinner_show('order_image_loading_Process_sms_message', true, "获取AI识别Token失败");
             }
         })
@@ -76,7 +76,7 @@ function initTableHeader(callback) {
         pageTabs: undefined,
         request: dto
     }, function (response) {
-        if (response.code == response_success) {
+        if (response?.code === response_success) {
             localStorage.setItem("init_table_header", JSON.stringify(response.content));
             callback(JSON.stringify(response.content));
         }
@@ -181,19 +181,34 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             dto.content = JSON.parse(tableHeader);
             sendResponse(dto);
         }
+    } else if (request.cmd == 'query_detail_img_base64_content_scripts') {
+        if (request.code == response_success) {
+            getBase64(request.image.src, dataURL => {
+                sendMessageToContentScript({
+                    cmd: "query_detail_img_base64_background",
+                    pageTabs: undefined, request: request, base64: dataURL
+                }, function (response) {
+                    let res = response;
+                });
+            });
+            sendResponse(dto);
+        }
     }
 });
 
 // 发送消息到前端 获取topId方法
 function sendMessageToContentScript(message, callback) {
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        if (message.pageTabs == undefined) {
-            message.pageTabs = tabs;
-        }
-        chrome.tabs.sendMessage(message.pageTabs[0].id, message, function (response) {
-            if (callback) callback(response);
+    try{
+        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+            if (message.pageTabs == undefined) {
+                message.pageTabs = tabs;
+            }
+            chrome.tabs?.sendMessage(message?.pageTabs[0]?.id, message, function (response) {
+                if (callback !== undefined) callback(response);
+            });
         });
-    });
+    }catch (e) {
+    }
 }
 
 //异步递归ocr
@@ -298,4 +313,18 @@ function evalJSX(local) {
         }
     })
     return jsx;
+}
+
+function getBase64(url, callback) {
+    var Img = new Image(), dataURL = '';
+    Img.src = url + '?v=' + Math.random();
+    Img.setAttribute('crossOrigin', 'Anonymous');
+    Img.onload = function () {
+        var canvas = document.createElement('canvas'), width = Img.width, height = Img.height;
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(Img, 0, 0, width, height);
+        dataURL = canvas.toDataURL('image/jpeg');
+        return callback ? callback(dataURL) : null;
+    };
 }
