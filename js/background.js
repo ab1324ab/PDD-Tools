@@ -10,7 +10,7 @@ setBadge();
 function setBadge() {
     chrome.browserAction.setBadgeText({text: 'v1.4'});
     let color = "#F56C6C" + "#4eb61b" + "#4285f4";
-    chrome.browserAction.setBadgeBackgroundColor({color: '#F56C6C'});
+    chrome.browserAction.setBadgeBackgroundColor({color: '#89aaf6'});
 }
 
 function initAccess_token() {
