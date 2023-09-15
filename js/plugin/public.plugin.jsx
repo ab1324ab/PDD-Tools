@@ -3,10 +3,11 @@ essentials()
 function essentials() {
     var detailIndex = 1;
     document.querySelectorAll('img').forEach(function (img, index) {
-        if($(img).attr("src") || $(img).attr("data-src")){
+        if ($(img).attr("src") || $(img).attr("data-src")) {
             var src = $(img).attr("src") || $(img).attr("data-src");
-            if (src.indexOf(window.location.protocol) === -1 && src.indexOf('base64') === -1 )
-                src = window.location.protocol +'//'+ window.location.host + src;
+            if (src.indexOf(window.location.protocol) === -1 && src.indexOf('base64') === -1)
+                if (src.indexOf('\\') === 0 || src.indexOf('//') === 0) src = window.location.protocol + src;
+                else src = window.location.protocol + '//' + window.location.host + src;
             send({
                 src: src,
                 group: '全图',

@@ -712,13 +712,18 @@ function aiparser() {
     function PrefixZero(num, n) {
         return (Array(n).join(0) + num).slice(-n);
     }
+
     imageData.length = 0
+
     // 发送图片详情信息
     function send(detailImg) {
         // console.info(detailImg)
-        sendMessageToBackground({
+        if (detailImg.src.indexOf('data:') > -1) {
+            writeImgDivBase64(detailImg, detailImg.src);
+        } else sendMessageToBackground({
             cmd: "query_detail_img_base64_content_scripts",
-            code: response_success, image: detailImg
+            code: response_success,
+            image: detailImg
         }, function (response) {
             let res = response;
         })
